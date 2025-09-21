@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, delay, of, throwError } from 'rxjs';
 
@@ -14,12 +13,9 @@ import {
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly API_BASE = '/api/auth';
+  // HttpClient et API_BASE seront ajoutés quand on implémentera les vraies API
 
-  // eslint-disable-next-line no-unused-vars
-  constructor(private readonly http: HttpClient) {
-    // http sera utilisé plus tard pour les vraies requêtes API
-  }
+  constructor() {}
 
   login(credentials: Credentials): Observable<{ user: User; token: AuthToken }> {
     // Mock pour l'instant - plus tard remplacer par http.post
