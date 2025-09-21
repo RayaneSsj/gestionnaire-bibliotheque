@@ -7,7 +7,7 @@ import {
   RegisterPayload,
   User,
   UserRole,
-} from '../../shared/models';
+} from '../../features/auth/data';
 
 @Injectable({
   providedIn: 'root',
@@ -45,8 +45,7 @@ export class AuthService {
           const user: User = {
             id: '1',
             email: 'admin@test.com',
-            firstName: 'Admin',
-            lastName: 'User',
+            displayName: 'Admin User',
             role: UserRole.ADMIN,
             isActive: true,
             createdAt: new Date().toISOString(),
@@ -66,8 +65,7 @@ export class AuthService {
           const user: User = {
             id: '2',
             email: 'user@test.com',
-            firstName: 'John',
-            lastName: 'Doe',
+            displayName: 'John Doe',
             role: UserRole.MEMBER,
             isActive: true,
             createdAt: new Date().toISOString(),
@@ -106,8 +104,7 @@ export class AuthService {
         const user: User = {
           id: 'new_user_' + Date.now(),
           email: payload.email,
-          firstName: payload.firstName,
-          lastName: payload.lastName,
+          displayName: payload.displayName,
           role: UserRole.MEMBER,
           isActive: true,
           createdAt: new Date().toISOString(),
@@ -132,8 +129,7 @@ export class AuthService {
     return of({
       id: '1',
       email: 'admin@test.com',
-      firstName: 'Admin',
-      lastName: 'User',
+      displayName: 'Admin User',
       role: UserRole.ADMIN,
       isActive: true,
       createdAt: new Date().toISOString(),

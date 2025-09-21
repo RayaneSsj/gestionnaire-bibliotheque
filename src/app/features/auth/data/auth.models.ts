@@ -1,14 +1,16 @@
 export enum UserRole {
   ADMIN = 'admin',
-  LIBRARIAN = 'librarian',
+  LIBRARIAN = 'librarian', 
   MEMBER = 'member',
 }
+
+// Export explicite pour ESLint
+export const USER_ROLES = Object.values(UserRole);
 
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  displayName: string;
   role: UserRole;
   isActive: boolean;
   createdAt: string;
@@ -30,7 +32,6 @@ export interface Credentials {
 export interface RegisterPayload {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  displayName: string;
   confirmPassword: string;
 }

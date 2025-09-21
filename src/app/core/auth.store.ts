@@ -1,6 +1,6 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
 
-import { AuthToken, User, UserRole } from '../shared/models';
+import { AuthToken, User, UserRole } from '../features/auth/data';
 
 @Injectable({
   providedIn: 'root',
@@ -35,10 +35,7 @@ export class AuthStore {
 
   readonly displayName = computed(() => {
     const user = this._currentUser();
-    if (!user) {
-      return '';
-    }
-    return `${user.firstName} ${user.lastName}`;
+    return user?.displayName || '';
   });
 
   constructor() {
