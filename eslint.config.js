@@ -22,7 +22,10 @@ module.exports = [
         describe: 'readonly',
         it: 'readonly',
         beforeEach: 'readonly',
-        expect: 'readonly'
+        expect: 'readonly',
+        localStorage: 'readonly',
+        setTimeout: 'readonly',
+        Date: 'readonly'
       }
     },
     plugins: {
