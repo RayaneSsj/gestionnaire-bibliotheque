@@ -4,22 +4,11 @@ import { Component } from '@angular/core';
   selector: 'app-catalog',
   standalone: true,
   template: `
-    <div class="page-container">
-      <h1>Catalogue des livres</h1>
-      <p>Catalogue de la bibliothèque - En cours de développement</p>
+    <div class="container py-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-4">Catalogue des livres</h1>
+      <p class="text-gray-600">Catalogue de la bibliothèque - En cours de développement</p>
     </div>
   `,
-  styles: [`
-    .page-container {
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: #333;
-      margin-bottom: 1rem;
-    }
-  `]
+  styles: []
 })
 export class CatalogPage {}
