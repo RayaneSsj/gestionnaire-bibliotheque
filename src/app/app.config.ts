@@ -1,6 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
 
 import { appRoutes } from './app.routes';
 
@@ -11,9 +11,9 @@ export const appConfig: ApplicationConfig = {
       appRoutes,
       withInMemoryScrolling({
         scrollPositionRestoration: 'top',
-        anchorScrolling: 'enabled'
+        anchorScrolling: 'enabled',
       })
     ),
-    provideHttpClient()
-  ]
+    provideHttpClient(),
+  ],
 };

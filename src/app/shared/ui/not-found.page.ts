@@ -15,53 +15,55 @@ import { RouterLink } from '@angular/router';
       </div>
     </div>
   `,
-  styles: [`
-    .not-found-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      text-align: center;
-      padding: 2rem;
-    }
+  styles: [
+    `
+      .not-found-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        padding: 2rem;
+      }
 
-    .content {
-      max-width: 500px;
-    }
+      .content {
+        max-width: 500px;
+      }
 
-    h1 {
-      font-size: 6rem;
-      font-weight: bold;
-      margin: 0;
-      color: #dc3545;
-    }
+      h1 {
+        font-size: 6rem;
+        font-weight: bold;
+        margin: 0;
+        color: #dc3545;
+      }
 
-    h2 {
-      font-size: 2rem;
-      margin: 1rem 0;
-      color: #333;
-    }
+      h2 {
+        font-size: 2rem;
+        margin: 1rem 0;
+        color: #333;
+      }
 
-    p {
-      font-size: 1.2rem;
-      margin: 1.5rem 0;
-      color: #666;
-    }
+      p {
+        font-size: 1.2rem;
+        margin: 1.5rem 0;
+        color: #666;
+      }
 
-    .home-link {
-      display: inline-block;
-      padding: 0.8rem 2rem;
-      background-color: #007bff;
-      color: white;
-      text-decoration: none;
-      border-radius: 0.5rem;
-      font-weight: 500;
-      transition: background-color 0.2s;
-    }
+      .home-link {
+        display: inline-block;
+        padding: 0.8rem 2rem;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
 
-    .home-link:hover {
-      background-color: #0056b3;
-    }
-  `]
+      .home-link:hover {
+        background-color: #0056b3;
+      }
+    `,
+  ],
 })
 export class NotFoundPage {}
