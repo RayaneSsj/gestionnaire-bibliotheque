@@ -4,6 +4,7 @@ export interface Author {
   lastName: string;
   biography?: string;
   birthDate?: string;
+  deathDate?: string;
   nationality?: string;
   createdAt: string;
   updatedAt: string;
@@ -13,7 +14,6 @@ export interface Category {
   id: string;
   name: string;
   description?: string;
-  color?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -23,16 +23,14 @@ export interface Book {
   title: string;
   isbn: string;
   authorId: string;
-  author?: Author;
   categoryId: string;
-  category?: Category;
   description?: string;
-  publishedDate: string;
-  pageCount: number;
-  language: string;
+  publishedDate?: string;
   totalCopies: number;
-  availableCount: number;
-  coverUrl?: string;
+  availableCopies: number;
+  language?: string;
+  pages?: number;
+  publisher?: string;
   createdAt: string;
   updatedAt: string;
 }

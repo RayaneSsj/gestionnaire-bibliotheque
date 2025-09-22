@@ -1,10 +1,12 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
+import { SpinnerComponent } from './shared/ui/spinner.component';
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, SpinnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <header class="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -53,6 +55,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
     <main class="min-h-screen bg-gray-50">
       <router-outlet></router-outlet>
     </main>
+    <app-spinner></app-spinner>
   `,
   styles: [],
 })
