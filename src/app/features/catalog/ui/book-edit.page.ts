@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { Component, ChangeDetectionStrategy, inject, computed } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 
 import { CatalogStore } from "../catalog.store";
+
 import { BookFormComponent, BookFormData } from "./book-form.component";
 
 @Component({

@@ -171,7 +171,7 @@ export class RegisterPage {
 
   getPasswordErrors(): string[] {
     const passwordErrors = this.registerForm.get('password')?.errors?.['passwordStrength'];
-    if (!passwordErrors) return [];
+    if (!passwordErrors) {return [];}
     
     return Object.values(passwordErrors) as string[];
   }

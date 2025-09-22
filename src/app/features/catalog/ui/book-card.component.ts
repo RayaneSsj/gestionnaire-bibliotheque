@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 
 import { BookWithDetails } from '../catalog.store';
 

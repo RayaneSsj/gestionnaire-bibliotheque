@@ -1,6 +1,6 @@
 import { User, UserRole, AuthToken } from '../features/auth/data';
-import { Author, Book, Category } from '../shared/models';
-import { Loan, LoanStatus } from '../shared/models';
+import { Author, Book, Category , Loan, LoanStatus } from '../shared/models';
+
 
 export interface Member extends User {
   membershipDate: string;

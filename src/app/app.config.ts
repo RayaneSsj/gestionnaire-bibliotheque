@@ -3,9 +3,9 @@ import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
 import { appRoutes } from './app.routes';
-import { mockApiInterceptor } from './core/interceptors/mock-api.interceptor';
 import { httpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
+import { mockApiInterceptor } from './core/interceptors/mock-api.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

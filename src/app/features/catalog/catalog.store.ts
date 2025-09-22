@@ -1,5 +1,5 @@
-import { Injectable, computed, effect, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, computed, effect, signal, inject } from '@angular/core';
 import { catchError, of, tap } from 'rxjs';
 
 import { Book, Author, Category } from './data';

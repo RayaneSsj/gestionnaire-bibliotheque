@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, input, output, computed, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, input, output, computed, effect, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { Book, Author, Category } from '../data';
