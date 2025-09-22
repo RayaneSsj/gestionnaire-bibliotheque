@@ -382,17 +382,17 @@ export class AllLoansPage {
   }
 
   canReturn(loan: any): boolean {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     return loan.status === LoanStatus.ACTIVE;
   }
 
   canRenew(loan: any): boolean {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     return loan.status === LoanStatus.ACTIVE && loan.renewalCount < 2;
   }
 
   canCancel(loan: any): boolean {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     return loan.status === LoanStatus.ACTIVE;
   }
 
@@ -427,7 +427,7 @@ export class AllLoansPage {
   }
 
   getDueDateClass(loan: any): string {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     if (loan.status === LoanStatus.RETURNED) {
       return 'text-gray-600';
     }
@@ -462,7 +462,7 @@ export class AllLoansPage {
   }
 
   trackByLoanId(_index: number, loan: any): string {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     return loan.id;
   }
 }

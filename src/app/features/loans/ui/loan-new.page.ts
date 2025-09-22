@@ -302,7 +302,7 @@ export class LoanNewPage {
       isActive: true,
       createdAt: '',
       updatedAt: '',
-    }, // eslint-disable-line @typescript-eslint/no-explicit-any
+    },  
     {
       id: '2',
       displayName: 'Marie Martin',
@@ -311,7 +311,7 @@ export class LoanNewPage {
       isActive: true,
       createdAt: '',
       updatedAt: '',
-    }, // eslint-disable-line @typescript-eslint/no-explicit-any
+    },  
     {
       id: '3',
       displayName: 'Pierre Durand',
@@ -320,7 +320,7 @@ export class LoanNewPage {
       isActive: true,
       createdAt: '',
       updatedAt: '',
-    }, // eslint-disable-line @typescript-eslint/no-explicit-any
+    },  
     {
       id: '4',
       displayName: 'Sophie Bernard',
@@ -329,7 +329,7 @@ export class LoanNewPage {
       isActive: true,
       createdAt: '',
       updatedAt: '',
-    }, // eslint-disable-line @typescript-eslint/no-explicit-any
+    },  
   ]);
 
   readonly filteredUsers = computed(() => {
@@ -368,7 +368,7 @@ export class LoanNewPage {
     // Écouter les clics pour fermer les dropdowns
     if (typeof document !== 'undefined') {
       document.addEventListener('click', event => {
-        // eslint-disable-line no-undef
+         
         const target = event.target as HTMLElement;
         if (!target.closest('#userSearch') && !target.closest('.absolute')) {
           this.showUserDropdown = false;
@@ -407,7 +407,7 @@ export class LoanNewPage {
   }
 
   selectBook(book: any): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     this.selectedBook = book;
     this.bookSearchQuery = book.title;
     this.loanForm.patchValue({ bookId: book.id });
