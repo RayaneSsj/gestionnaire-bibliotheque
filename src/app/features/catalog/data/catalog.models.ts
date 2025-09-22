@@ -24,13 +24,13 @@ export interface Book {
   isbn: string;
   authorId: string;
   categoryId: string;
-  description?: string;
-  publishedDate?: string;
+  description: string | undefined;
+  publishedDate: string | undefined;
   totalCopies: number;
   availableCopies: number;
-  language?: string;
-  pages?: number;
-  publisher?: string;
+  language: string | undefined;
+  pages: number | undefined;
+  publisher: string | undefined;
   createdAt: string;
   updatedAt: string;
 }
