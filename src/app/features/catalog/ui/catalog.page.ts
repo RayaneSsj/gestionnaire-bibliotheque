@@ -4,6 +4,8 @@ import {
   ChangeDetectionStrategy,
   inject,
   computed,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -170,11 +172,25 @@ import { BookCardComponent } from './book-card.component';
   `,
   styles: [],
 })
-export class CatalogPage {
+export class CatalogPage implements OnInit, OnDestroy {
+  private refreshInterval?: number;
   readonly catalogStore = inject(CatalogStore);
   readonly authStore = inject(AuthStore);
   readonly loansStore = inject(LoansStore);
   private readonly router = inject(Router);
+
+  ngOnInit(): void {
+    // Rafraîchir le catalogue toutes les 20 secondes pour tous les utilisateurs
+    this.refreshInterval = window.setInterval(() => {
+      this.catalogStore.refreshBooks();
+    }, 20000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
+  }
 
   readonly searchQuery = computed(() => this.catalogStore.query());
   readonly selectedCategoryId = computed(() =>
@@ -210,10 +226,10 @@ export class CatalogPage {
         bookId: bookId,
       });
 
-      // La diminution de la quantité sera gérée automatiquement
-      // par l'intercepteur mock API qui modifie déjà availableCopies
-      // On ne fait plus de modification optimiste ici pour éviter
-      // les désynchronisations en cas d'erreur
+      // Rafraîchir le catalogue après un court délai pour laisser temps à l'API mock
+      setTimeout(() => {
+        this.catalogStore.refreshBooks();
+      }, 100);
 
       // Optionnel : rediriger vers les emprunts après création
       // this.router.navigate(['/loans/mine']);

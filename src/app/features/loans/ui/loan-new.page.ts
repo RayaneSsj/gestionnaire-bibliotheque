@@ -452,6 +452,10 @@ export class LoanNewPage {
       };
 
       this.loansStore.createLoan(formData);
+      // Rafraîchir le catalogue après un court délai pour laisser temps à l'API mock
+      setTimeout(() => {
+        this.catalogStore.refreshBooks();
+      }, 100);
     } else {
       // Marquer tous les champs comme touchés pour afficher les erreurs
       Object.keys(this.loanForm.controls).forEach(key => {

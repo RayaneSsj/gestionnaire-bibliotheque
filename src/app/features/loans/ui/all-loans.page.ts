@@ -5,6 +5,8 @@ import {
   inject,
   computed,
   signal,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -291,10 +293,25 @@ import { LoansStore } from '../loans.store';
     </div>
   `,
 })
-export class AllLoansPage {
+export class AllLoansPage implements OnInit, OnDestroy {
+  private refreshInterval?: number;
   readonly loansStore = inject(LoansStore);
   readonly catalogStore = inject(CatalogStore);
   readonly router = inject(Router);
+
+  ngOnInit(): void {
+    // Rafraîchir les données toutes les 10 secondes pour la page admin
+    this.refreshInterval = window.setInterval(() => {
+      this.catalogStore.refreshBooks();
+      this.loansStore.refreshLoans();
+    }, 10000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
+  }
 
   // Filtres
   userSearchQuery = signal('');
@@ -369,8 +386,12 @@ export class AllLoansPage {
   }
 
   returnLoan(loanId: string): void {
-    // Retourner le livre - le catalogue sera automatiquement rafraîchi
+    // Retourner le livre et rafraîchir le catalogue
     this.loansStore.returnLoan(loanId);
+    // Rafraîchir le catalogue après un court délai pour laisser temps à l'API mock
+    setTimeout(() => {
+      this.catalogStore.refreshBooks();
+    }, 100);
   }
 
   renewLoan(loanId: string): void {
@@ -379,6 +400,10 @@ export class AllLoansPage {
 
   cancelLoan(loanId: string): void {
     this.loansStore.updateLoanStatus(loanId, LoanStatus.CANCELLED);
+    // Rafraîchir le catalogue après un court délai pour laisser temps à l'API mock
+    setTimeout(() => {
+      this.catalogStore.refreshBooks();
+    }, 100);
   }
 
   canReturn(loan: any): boolean {

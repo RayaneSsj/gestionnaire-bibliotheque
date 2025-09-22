@@ -3,7 +3,6 @@ import { Injectable, computed, signal, inject } from '@angular/core';
 import { catchError, of, tap } from 'rxjs';
 
 import { AuthStore } from '../../core/auth.store';
-import { CatalogStore } from '../catalog/catalog.store';
 
 import { Loan, LoanStatus } from './data';
 
@@ -28,7 +27,6 @@ export interface LoanWithDetails extends Loan {
 export class LoansStore {
   private readonly http = inject(HttpClient);
   private readonly authStore = inject(AuthStore);
-  private readonly catalogStore = inject(CatalogStore);
 
   // Signals privés
   private readonly _loans = signal<LoanWithDetails[]>([]);
@@ -95,9 +93,7 @@ export class LoansStore {
           const enrichedLoan = this.enrichLoanWithDetails(newLoan);
           this._loans.update(loans => [...loans, enrichedLoan]);
 
-          // Rafraîchir le catalogue après un emprunt réussi
-          // car l'intercepteur mock API a mis à jour les copies disponibles
-          this.catalogStore.refreshBooks();
+          // L'intercepteur mock API a mis à jour les copies disponibles
         }),
         catchError(error => {
           this._error.set(
@@ -124,9 +120,7 @@ export class LoansStore {
             loans.map(loan => (loan.id === loanId ? enrichedLoan : loan))
           );
 
-          // Rafraîchir le catalogue après un retour réussi
-          // car l'intercepteur mock API a augmenté les copies disponibles
-          this.catalogStore.refreshBooks();
+          // L'intercepteur mock API a augmenté les copies disponibles
         }),
         catchError(error => {
           this._error.set(

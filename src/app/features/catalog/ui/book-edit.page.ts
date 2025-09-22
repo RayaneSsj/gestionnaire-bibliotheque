@@ -48,10 +48,9 @@ export class BookEditPage {
   onSubmit(formData: BookFormData): void {
     const bookData = this.book();
     if (bookData) {
-      this.catalogStore.updateBook(bookData.id, {
-        ...formData,
-        availableCopies: bookData.availableCopies,
-      });
+      // Ne pas inclure availableCopies - laissons l'intercepteur le calculer automatiquement
+      // basé sur la différence entre ancien et nouveau totalCopies
+      this.catalogStore.updateBook(bookData.id, formData);
       this.router.navigate(["/catalog", bookData.id]);
     }
   }

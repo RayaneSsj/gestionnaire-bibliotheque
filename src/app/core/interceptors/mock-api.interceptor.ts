@@ -246,9 +246,21 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       ).pipe(delay(randomDelay));
     }
 
+    const originalBook = mockDb.books[bookIndex];
+    const updateData = req.body as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    // Calculer les nouveaux exemplaires disponibles si totalCopies a changé
+    let newAvailableCopies = originalBook.availableCopies;
+    if (updateData.totalCopies !== undefined && updateData.totalCopies !== originalBook.totalCopies) {
+      // Calcul : nouveaux disponibles = anciens disponibles + différence de total
+      const copiesDifference = updateData.totalCopies - originalBook.totalCopies;
+      newAvailableCopies = Math.max(0, originalBook.availableCopies + copiesDifference);
+    }
+
     const updatedBook = {
-      ...mockDb.books[bookIndex],
-      ...(req.body as any), // eslint-disable-line @typescript-eslint/no-explicit-any
+      ...originalBook,
+      ...updateData,
+      availableCopies: updateData.availableCopies !== undefined ? updateData.availableCopies : newAvailableCopies,
       updatedAt: new Date().toISOString(),
     };
 
@@ -572,6 +584,65 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
     loan.updatedAt = new Date().toISOString();
 
     // Enrichir le prêt avec les détails du livre et de l'utilisateur
+    const book = mockDb.books.find(b => b.id === loan.bookId);
+    const enrichedLoan = {
+      ...loan,
+      book: book
+        ? {
+            id: book.id,
+            title: book.title,
+            author:
+              mockDb.authors.find(a => a.id === book.authorId)?.firstName +
+                ' ' +
+                mockDb.authors.find(a => a.id === book.authorId)?.lastName ||
+              'Auteur inconnu',
+            isbn: book.isbn,
+          }
+        : undefined,
+      user: mockDb.users.find(u => u.id === loan.userId),
+    };
+
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: enrichedLoan,
+      })
+    ).pipe(delay(randomDelay));
+  }
+
+  // PATCH /api/loans/:id - Mettre à jour le statut d'un prêt (ex: annulation)
+  if (req.method === 'PATCH' && url.startsWith('/api/loans/')) {
+    const loanId = url.split('/')[3];
+    const loan = mockDb.loans.find(l => l.id === loanId);
+
+    if (!loan) {
+      return throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 404,
+            statusText: 'Not Found',
+            error: { message: 'Emprunt non trouvé' },
+          })
+      ).pipe(delay(randomDelay));
+    }
+
+    const { status } = req.body as { status: LoanStatus };
+
+    // Si on annule un prêt actif, rendre le livre disponible
+    if (loan.status === LoanStatus.ACTIVE && status === LoanStatus.CANCELLED) {
+      updateBookAvailability(loan.bookId, 1);
+
+      // Décrémenter le compteur d'emprunts du membre
+      const member = mockDb.members.find(m => m.id === loan.userId);
+      if (member) {
+        member.borrowedBooksCount = Math.max(0, member.borrowedBooksCount - 1);
+      }
+    }
+
+    loan.status = status;
+    loan.updatedAt = new Date().toISOString();
+
+    // Enrichir le prêt avec les détails
     const book = mockDb.books.find(b => b.id === loan.bookId);
     const enrichedLoan = {
       ...loan,

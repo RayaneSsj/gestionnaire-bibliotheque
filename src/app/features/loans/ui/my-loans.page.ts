@@ -302,12 +302,17 @@ export class MyLoansPage {
   }
 
   returnLoan(loanId: string): void {
-    // Retourner le livre - le catalogue sera automatiquement rafraîchi
+    // Retourner le livre et rafraîchir le catalogue
     this.loansStore.returnLoan(loanId);
+    // Rafraîchir le catalogue après un court délai pour laisser temps à l'API mock
+    setTimeout(() => {
+      this.catalogStore.refreshBooks();
+    }, 100);
   }
 
   renewLoan(loanId: string): void {
     this.loansStore.renewLoan(loanId);
+    // Le renouvellement ne change pas les quantités disponibles, pas besoin de rafraîchir le catalogue
   }
 
   formatDate(dateString: string): string {
