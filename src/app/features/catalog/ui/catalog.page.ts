@@ -1,14 +1,21 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  computed,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
-import { CatalogStore } from "../catalog.store";
-import { BookCardComponent } from "./book-card.component";
-import { AuthStore } from "../../../core";
+import { AuthStore } from '../../../core';
+import { LoansStore } from '../../loans/loans.store';
+import { CatalogStore } from '../catalog.store';
+
+import { BookCardComponent } from './book-card.component';
 
 @Component({
-  selector: "app-catalog",
+  selector: 'app-catalog',
   standalone: true,
   imports: [CommonModule, FormsModule, BookCardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,20 +34,26 @@ import { AuthStore } from "../../../core";
             + Ajouter un livre
           </button>
         </div>
-        
+
         <!-- Statistiques -->
         <div class="bg-blue-50 rounded-lg p-4 mb-6">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div>
-              <div class="text-2xl font-bold text-blue-600">{{ catalogStore.totalBooks() }}</div>
+              <div class="text-2xl font-bold text-blue-600">
+                {{ catalogStore.totalBooks() }}
+              </div>
               <div class="text-sm text-gray-600">Livres au total</div>
             </div>
             <div>
-              <div class="text-2xl font-bold text-green-600">{{ catalogStore.totalAvailableBooks() }}</div>
+              <div class="text-2xl font-bold text-green-600">
+                {{ catalogStore.totalAvailableBooks() }}
+              </div>
               <div class="text-sm text-gray-600">Livres disponibles</div>
             </div>
             <div>
-              <div class="text-2xl font-bold text-purple-600">{{ catalogStore.filteredBooks().length }}</div>
+              <div class="text-2xl font-bold text-purple-600">
+                {{ catalogStore.filteredBooks().length }}
+              </div>
               <div class="text-sm text-gray-600">Résultats affichés</div>
             </div>
           </div>
@@ -52,7 +65,10 @@ import { AuthStore } from "../../../core";
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Recherche -->
           <div class="md:col-span-2">
-            <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              for="search"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
               Recherche
             </label>
             <div class="relative">
@@ -64,9 +80,21 @@ import { AuthStore } from "../../../core";
                 placeholder="Rechercher par titre ou auteur..."
                 class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
                 </svg>
               </div>
             </div>
@@ -74,7 +102,10 @@ import { AuthStore } from "../../../core";
 
           <!-- Filtre par catégorie -->
           <div>
-            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              for="category"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
               Catégorie
             </label>
             <select
@@ -84,7 +115,10 @@ import { AuthStore } from "../../../core";
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Toutes les catégories</option>
-              <option *ngFor="let category of catalogStore.categories()" [value]="category.id">
+              <option
+                *ngFor="let category of catalogStore.categories()"
+                [value]="category.id"
+              >
                 {{ category.name }}
               </option>
             </select>
@@ -105,11 +139,19 @@ import { AuthStore } from "../../../core";
       </div>
 
       <!-- Grille des livres -->
-      <div *ngIf="catalogStore.filteredBooks().length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div
+        *ngIf="catalogStore.filteredBooks().length > 0"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      >
         <app-book-card
-          *ngFor="let book of catalogStore.filteredBooks(); trackBy: trackByBookId"
+          *ngFor="
+            let book of catalogStore.filteredBooks();
+            trackBy: trackByBookId
+          "
           [book]="book"
-          [showBorrowButton]="authStore.isAuthenticated() && !authStore.isAdmin()"
+          [showBorrowButton]="
+            authStore.isAuthenticated() && !authStore.isAdmin()
+          "
           [showEditButton]="authStore.isAdmin()"
           (viewDetails)="onViewDetails($event)"
           (borrow)="onBorrowBook($event)"
@@ -118,7 +160,10 @@ import { AuthStore } from "../../../core";
       </div>
 
       <!-- Empty state -->
-      <div *ngIf="catalogStore.filteredBooks().length === 0" class="text-center py-12">
+      <div
+        *ngIf="catalogStore.filteredBooks().length === 0"
+        class="text-center py-12"
+      >
         <p class="text-gray-500">Aucun livre trouvé.</p>
       </div>
     </div>
@@ -128,10 +173,13 @@ import { AuthStore } from "../../../core";
 export class CatalogPage {
   readonly catalogStore = inject(CatalogStore);
   readonly authStore = inject(AuthStore);
+  readonly loansStore = inject(LoansStore);
   private readonly router = inject(Router);
 
   readonly searchQuery = computed(() => this.catalogStore.query());
-  readonly selectedCategoryId = computed(() => this.catalogStore.selectedCategoryId());
+  readonly selectedCategoryId = computed(() =>
+    this.catalogStore.selectedCategoryId()
+  );
 
   readonly hasActiveFilters = computed(() => {
     return !!(this.searchQuery() || this.selectedCategoryId());
@@ -154,7 +202,22 @@ export class CatalogPage {
   }
 
   onBorrowBook(bookId: string): void {
-    console.log('Emprunter le livre:', bookId);
+    const currentUser = this.authStore.currentUser();
+    if (currentUser) {
+      // Créer l'emprunt sans modification optimiste
+      this.loansStore.createLoan({
+        userId: currentUser.id,
+        bookId: bookId,
+      });
+
+      // La diminution de la quantité sera gérée automatiquement
+      // par l'intercepteur mock API qui modifie déjà availableCopies
+      // On ne fait plus de modification optimiste ici pour éviter
+      // les désynchronisations en cas d'erreur
+
+      // Optionnel : rediriger vers les emprunts après création
+      // this.router.navigate(['/loans/mine']);
+    }
   }
 
   onEditBook(bookId: string): void {
