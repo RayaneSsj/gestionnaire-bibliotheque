@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 
-import { BookWithDetails } from '../catalog.store';
-import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
-import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
 import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
+import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
+import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
+import { BookWithDetails } from '../catalog.store';
 
 @Component({
   selector: 'app-book-card',

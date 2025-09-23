@@ -47,8 +47,8 @@ export class ToastService {
       type: 'success',
       title,
     };
-    if (message !== undefined) toast.message = message;
-    if (duration !== undefined) toast.duration = duration;
+    if (message !== undefined) {toast.message = message;}
+    if (duration !== undefined) {toast.duration = duration;}
     return this.show(toast as Omit<Toast, 'id'>);
   }
 
@@ -58,7 +58,7 @@ export class ToastService {
       title,
       duration: duration ?? 8000
     };
-    if (message !== undefined) toast.message = message;
+    if (message !== undefined) {toast.message = message;}
     return this.show(toast as Omit<Toast, 'id'>);
   }
 
@@ -67,8 +67,8 @@ export class ToastService {
       type: 'warning',
       title,
     };
-    if (message !== undefined) toast.message = message;
-    if (duration !== undefined) toast.duration = duration;
+    if (message !== undefined) {toast.message = message;}
+    if (duration !== undefined) {toast.duration = duration;}
     return this.show(toast as Omit<Toast, 'id'>);
   }
 
@@ -77,8 +77,8 @@ export class ToastService {
       type: 'info',
       title,
     };
-    if (message !== undefined) toast.message = message;
-    if (duration !== undefined) toast.duration = duration;
+    if (message !== undefined) {toast.message = message;}
+    if (duration !== undefined) {toast.duration = duration;}
     return this.show(toast as Omit<Toast, 'id'>);
   }
 

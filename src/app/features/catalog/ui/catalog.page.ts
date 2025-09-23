@@ -11,11 +11,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AuthStore, FocusManagementService } from '../../../core';
+import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
+import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
+import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { LoansStore } from '../../loans/loans.store';
 import { CatalogStore } from '../catalog.store';
-import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
-import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
-import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
 
 import { BookCardComponent } from './book-card.component';
 
