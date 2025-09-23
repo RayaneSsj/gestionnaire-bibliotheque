@@ -366,8 +366,8 @@ export class LoanNewPage {
 
   constructor() {
     // Écouter les clics pour fermer les dropdowns
-    if (typeof document !== 'undefined') {
-      document.addEventListener('click', event => {
+    if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
+      window.document.addEventListener('click', event => {
          
         const target = event.target as HTMLElement;
         if (!target.closest('#userSearch') && !target.closest('.absolute')) {

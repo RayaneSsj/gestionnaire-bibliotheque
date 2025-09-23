@@ -223,7 +223,7 @@ import { LoansStore } from '../../loans/loans.store';
   `,
 })
 export class AdminDashboardPage implements OnInit, OnDestroy {
-  private refreshInterval?: ReturnType<typeof setInterval>;
+  private refreshInterval?: ReturnType<typeof window.setInterval>;
   readonly catalogStore = inject(CatalogStore);
   readonly loansStore = inject(LoansStore);
   private readonly router = inject(Router);
