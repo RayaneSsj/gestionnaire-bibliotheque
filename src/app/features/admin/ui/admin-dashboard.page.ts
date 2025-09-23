@@ -233,7 +233,7 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Rafraîchir les données toutes les 15 secondes
-    this.refreshInterval = window.setInterval(() => {
+    this.refreshInterval = setInterval(() => {
       this.catalogStore.refreshBooks();
       this.loansStore.refreshLoans();
     }, 15000);
@@ -241,7 +241,7 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.refreshInterval) {
-      window.clearInterval(this.refreshInterval);
+      clearInterval(this.refreshInterval);
     }
   }
 
