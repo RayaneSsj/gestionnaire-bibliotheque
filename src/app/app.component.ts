@@ -3,25 +3,35 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/rou
 
 import { AuthStore } from './core';
 import { SpinnerComponent } from './shared/ui/spinner.component';
+import { ToastComponent } from './shared/ui/toast.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, SpinnerComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, SpinnerComponent, ToastComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <header class="bg-white shadow-sm border-b sticky top-0 z-50">
+    <!-- Skip link for accessibility -->
+    <a
+      href="#main-content"
+      class="skip-link sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:underline"
+    >
+      Aller au contenu principal
+    </a>
+
+    <header class="bg-white shadow-sm border-b sticky top-0 z-50" role="banner">
       <div class="container">
         <div class="flex justify-between items-center h-16">
           <h1 class="text-xl font-semibold">
             <a
               routerLink="/"
               class="text-blue-600 hover:text-blue-700 transition-colors"
+              aria-label="Retour à l'accueil - Gestionnaire Bibliothèque"
             >
               Gestionnaire Bibliothèque
             </a>
           </h1>
-          <nav class="hidden md:flex space-x-8 items-center">
+          <nav class="hidden md:flex space-x-8 items-center" role="navigation" aria-label="Navigation principale">
             <a routerLink="/catalog" routerLinkActive="active" class="nav-link"
               >Catalogue</a
             >
@@ -32,7 +42,7 @@ import { SpinnerComponent } from './shared/ui/spinner.component';
             }
             @if (showAdmin()) {
               <a routerLink="/admin" routerLinkActive="active" class="nav-link"
-                >Admin</a
+                >Administration</a
               >
             }
             @if (showAuth()) {
@@ -42,24 +52,30 @@ import { SpinnerComponent } from './shared/ui/spinner.component';
             }
             @if (showUserInfo()) {
               <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-600">
+                <span class="text-sm text-gray-600" aria-label="Utilisateur connecté">
                   Bonjour, {{ currentUserName() }}
                 </span>
                 <button
                   (click)="onLogout()"
-                  class="text-sm bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
+                  class="text-sm bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                  aria-label="Se déconnecter de l'application"
                 >
                   Déconnexion
                 </button>
               </div>
             }
           </nav>
-          <button class="md:hidden p-2 rounded-md hover:bg-gray-100">
+          <button
+            class="md:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            aria-label="Ouvrir le menu de navigation"
+            aria-expanded="false"
+          >
             <svg
               class="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path
                 stroke-linecap="round"
@@ -72,10 +88,11 @@ import { SpinnerComponent } from './shared/ui/spinner.component';
         </div>
       </div>
     </header>
-    <main class="min-h-screen bg-gray-50">
+    <main id="main-content" class="min-h-screen bg-gray-50" role="main">
       <router-outlet></router-outlet>
     </main>
     <app-spinner></app-spinner>
+    <app-toast></app-toast>
   `,
   styles: [
     `
@@ -84,6 +101,20 @@ import { SpinnerComponent } from './shared/ui/spinner.component';
       }
       .nav-link.active {
         @apply text-blue-600 font-medium;
+      }
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: #1e40af;
+        color: white;
+        padding: 8px;
+        text-decoration: none;
+        z-index: 1000;
+        border-radius: 4px;
+      }
+      .skip-link:focus {
+        top: 6px;
       }
     `
   ],
