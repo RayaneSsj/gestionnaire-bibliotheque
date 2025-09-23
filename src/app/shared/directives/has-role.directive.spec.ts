@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AuthStore } from '../../core/auth.store';
 import { User, UserRole } from '../../features/auth/data';
+
 import { HasRoleDirective } from './has-role.directive';
 
 @Component({

@@ -1,19 +1,21 @@
-import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from './app.component';
 import { AuthStore } from './core/auth.store';
 
+type MockAuthStore = Pick<AuthStore, 'isAuthenticated' | 'isAdmin' | 'currentUser' | 'logout'>;
+
 describe('AppComponent', () => {
-  let mockAuthStore: any;
+  let mockAuthStore: MockAuthStore;
 
   beforeEach(async () => {
     mockAuthStore = {
       isAuthenticated: signal(false),
       isAdmin: signal(false),
       currentUser: signal(null),
-      logout: jasmine.createSpy('logout')
+      logout: (): void => {}
     };
 
     await TestBed.configureTestingModule({

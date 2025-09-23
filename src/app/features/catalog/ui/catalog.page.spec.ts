@@ -1,20 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 
-import { CatalogPage } from './catalog.page';
-import { BookCardComponent } from './book-card.component';
-import { CatalogStore } from '../catalog.store';
 import { AuthStore, FocusManagementService } from '../../../core';
-import { LoansStore } from '../../loans/loans.store';
-import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
-import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
 import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
-import { Book, Category, Author } from '../data';
+import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
+import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { User, UserRole } from '../../auth/data';
+import { LoansStore } from '../../loans/loans.store';
+import { CatalogStore } from '../catalog.store';
+import { Book, Category, Author } from '../data';
+
+import { BookCardComponent } from './book-card.component';
+import { CatalogPage } from './catalog.page';
 
 describe('CatalogPage Integration Test', () => {
   let component: CatalogPage;

@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { AuthStore } from './auth.store';
+
 import { User, UserRole, AuthToken } from '../features/auth/data';
+
+import { AuthStore } from './auth.store';
 
 describe('AuthStore', () => {
   let store: AuthStore;
