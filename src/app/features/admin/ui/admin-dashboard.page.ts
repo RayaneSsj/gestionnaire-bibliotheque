@@ -2,10 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, inject, computed, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
-import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
 import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
-
+import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
+import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { CatalogStore } from '../../catalog/catalog.store';
 import { LoansStore } from '../../loans/loans.store';
 
@@ -230,11 +229,11 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
   readonly loansStore = inject(LoansStore);
   private readonly router = inject(Router);
 
-  readonly descriptionText = "Vue d'ensemble complète de l'activité de la bibliothèque avec toutes les statistiques importantes et les indicateurs de performance pour une gestion optimale";
+  readonly descriptionText = "Vue d\\'ensemble complète de l\\'activité de la bibliothèque avec toutes les statistiques importantes et les indicateurs de performance pour une gestion optimale";
 
   ngOnInit(): void {
     // Rafraîchir les données toutes les 15 secondes
-    this.refreshInterval = setInterval(() => {
+    this.refreshInterval = window.setInterval(() => {
       this.catalogStore.refreshBooks();
       this.loansStore.refreshLoans();
     }, 15000);
@@ -242,7 +241,7 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
+      window.clearInterval(this.refreshInterval);
     }
   }
 

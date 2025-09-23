@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 
+import { AuthStore } from './core';
 import { SpinnerComponent } from './shared/ui/spinner.component';
 
 @Component({
@@ -20,19 +21,38 @@ import { SpinnerComponent } from './shared/ui/spinner.component';
               Gestionnaire Bibliothèque
             </a>
           </h1>
-          <nav class="hidden md:flex space-x-8">
+          <nav class="hidden md:flex space-x-8 items-center">
             <a routerLink="/catalog" routerLinkActive="active" class="nav-link"
               >Catalogue</a
             >
-            <a routerLink="/loans" routerLinkActive="active" class="nav-link"
-              >Emprunts</a
-            >
-            <a routerLink="/admin" routerLinkActive="active" class="nav-link"
-              >Admin</a
-            >
-            <a routerLink="/auth" routerLinkActive="active" class="nav-link"
-              >Connexion</a
-            >
+            @if (showEmprunts()) {
+              <a routerLink="/loans" routerLinkActive="active" class="nav-link"
+                >Emprunts</a
+              >
+            }
+            @if (showAdmin()) {
+              <a routerLink="/admin" routerLinkActive="active" class="nav-link"
+                >Admin</a
+              >
+            }
+            @if (showAuth()) {
+              <a routerLink="/auth" routerLinkActive="active" class="nav-link"
+                >Connexion</a
+              >
+            }
+            @if (showUserInfo()) {
+              <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-600">
+                  Bonjour, {{ currentUserName() }}
+                </span>
+                <button
+                  (click)="onLogout()"
+                  class="text-sm bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
+                >
+                  Déconnexion
+                </button>
+              </div>
+            }
           </nav>
           <button class="md:hidden p-2 rounded-md hover:bg-gray-100">
             <svg
@@ -57,6 +77,61 @@ import { SpinnerComponent } from './shared/ui/spinner.component';
     </main>
     <app-spinner></app-spinner>
   `,
-  styles: [],
+  styles: [
+    `
+      .nav-link {
+        @apply text-gray-600 hover:text-gray-900 transition-colors;
+      }
+      .nav-link.active {
+        @apply text-blue-600 font-medium;
+      }
+    `
+  ],
 })
-export class AppComponent {}
+export class AppComponent {
+  private readonly authStore = inject(AuthStore);
+  private readonly router = inject(Router);
+
+  constructor() {
+    console.log('🚀 AppComponent loaded!');
+    console.log('AuthStore:', this.authStore);
+    console.log('Initial isAuthenticated:', this.authStore.isAuthenticated());
+    console.log('Initial currentUser:', this.authStore.currentUser());
+  }
+
+  // Computed signals pour la navigation dynamique
+  readonly showEmprunts = computed(() => {
+    const isAuth = this.authStore.isAuthenticated();
+    console.log('🟢 showEmprunts - isAuthenticated:', isAuth);
+    return isAuth;
+  });
+
+  readonly showAdmin = computed(() => {
+    const isAdmin = this.authStore.isAdmin();
+    console.log('🟡 showAdmin - isAdmin:', isAdmin);
+    return isAdmin;
+  });
+
+  readonly showAuth = computed(() => {
+    const isAuth = this.authStore.isAuthenticated();
+    console.log('🔵 showAuth - !isAuthenticated:', !isAuth);
+    return !isAuth;
+  });
+
+  readonly showUserInfo = computed(() => {
+    const isAuth = this.authStore.isAuthenticated();
+    console.log('🟣 showUserInfo - isAuthenticated:', isAuth);
+    return isAuth;
+  });
+
+  readonly currentUserName = computed(() => {
+    const user = this.authStore.currentUser();
+    console.log('🟠 currentUserName - user:', user);
+    return user ? user.displayName : '';
+  });
+
+  onLogout(): void {
+    this.authStore.logout();
+    this.router.navigate(['/']);
+  }
+}
