@@ -15,7 +15,7 @@ import { Toast, ToastService } from '../../core/services/toast.service';
       aria-label="Notifications"
     >
       <div
-        *ngFor="let toast of toastService.toasts$()"
+        *ngFor="let toast of toastService.toasts$(); trackBy: trackByToastId"
         [class]="getToastClasses(toast)"
         role="alert"
         [attr.aria-labelledby]="toast.id + '-title'"
@@ -38,7 +38,7 @@ import { Toast, ToastService } from '../../core/services/toast.service';
             </p>
             <div *ngIf="toast.actions && toast.actions.length > 0" class="mt-2 flex space-x-2">
               <button
-                *ngFor="let action of toast.actions"
+                *ngFor="let action of toast.actions; trackBy: trackByActionLabel"
                 type="button"
                 (click)="action.action()"
                 class="text-xs font-medium underline focus:outline-none focus:ring-2 focus:ring-offset-2 rounded"
@@ -146,6 +146,14 @@ export class ToastComponent {
       default:
         return 'text-gray-400 hover:text-gray-500 focus:ring-gray-500';
     }
+  }
+
+  trackByToastId(_index: number, toast: Toast): string {
+    return toast.id;
+  }
+
+  trackByActionLabel(_index: number, action: { label: string; action: () => void }): string {
+    return action.label;
   }
 
   getIcon(type: string): string {

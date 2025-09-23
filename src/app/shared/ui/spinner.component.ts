@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { LoadingService } from '../../core/services/loading.service';
 
@@ -7,6 +7,7 @@ import { LoadingService } from '../../core/services/loading.service';
   selector: 'app-spinner',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div 
       *ngIf="loadingService.isLoading()" 

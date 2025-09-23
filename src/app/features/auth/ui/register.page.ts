@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
@@ -10,6 +10,7 @@ import { matchPassword, passwordStrength } from '../../../shared/validators';
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div class="max-w-md w-full space-y-8">
@@ -94,7 +95,7 @@ import { matchPassword, passwordStrength } from '../../../shared/validators';
                   Le mot de passe est requis
                 </div>
                 <div *ngIf="registerForm.get('password')?.errors?.['passwordStrength']">
-                  <div *ngFor="let error of getPasswordErrors()" class="text-xs">
+                  <div *ngFor="let error of getPasswordErrors(); trackBy: trackByError" class="text-xs">
                     • {{ error }}
                   </div>
                 </div>
@@ -172,8 +173,12 @@ export class RegisterPage {
   getPasswordErrors(): string[] {
     const passwordErrors = this.registerForm.get('password')?.errors?.['passwordStrength'];
     if (!passwordErrors) {return [];}
-    
+
     return Object.values(passwordErrors) as string[];
+  }
+
+  trackByError(_index: number, error: string): string {
+    return error;
   }
 
   onSubmit(): void {

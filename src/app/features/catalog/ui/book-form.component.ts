@@ -104,7 +104,7 @@ export interface BookFormData {
             [class.border-red-500]="isFieldInvalid('authorId')"
           >
             <option value="">Sélectionner un auteur</option>
-            <option *ngFor="let author of authors()" [value]="author.id">
+            <option *ngFor="let author of authors(); trackBy: trackByAuthorId" [value]="author.id">
               {{ author.firstName }} {{ author.lastName }}
             </option>
           </select>
@@ -127,7 +127,7 @@ export interface BookFormData {
             [class.border-red-500]="isFieldInvalid('categoryId')"
           >
             <option value="">Sélectionner une catégorie</option>
-            <option *ngFor="let category of categories()" [value]="category.id">
+            <option *ngFor="let category of categories(); trackBy: trackByCategoryId" [value]="category.id">
               {{ category.name }}
             </option>
           </select>
@@ -303,6 +303,14 @@ export class BookFormComponent {
     } else {
       this.bookForm.markAllAsTouched();
     }
+  }
+
+  trackByAuthorId(_index: number, author: Author): string {
+    return author.id;
+  }
+
+  trackByCategoryId(_index: number, category: Category): string {
+    return category.id;
   }
 
   onCancel(): void {

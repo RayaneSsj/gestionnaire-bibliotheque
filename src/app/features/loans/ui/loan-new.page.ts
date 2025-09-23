@@ -83,7 +83,7 @@ import { LoansStore } from '../loans.store';
                 class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
               >
                 <button
-                  *ngFor="let user of filteredUsers()"
+                  *ngFor="let user of filteredUsers(); trackBy: trackByUserId"
                   type="button"
                   (click)="selectUser(user)"
                   class="w-full px-3 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
@@ -152,7 +152,7 @@ import { LoansStore } from '../loans.store';
                 class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
               >
                 <button
-                  *ngFor="let book of availableBooks()"
+                  *ngFor="let book of availableBooks(); trackBy: trackByBookId"
                   type="button"
                   (click)="selectBook(book)"
                   class="w-full px-3 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
@@ -293,7 +293,7 @@ export class LoanNewPage {
   selectedBook: any = null; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // Mock users data (in real app, this would come from a UsersStore)
-  readonly mockUsers = computed(() => [
+  private readonly _mockUsers = [
     {
       id: '1',
       displayName: 'Jean Dupont',
@@ -302,7 +302,7 @@ export class LoanNewPage {
       isActive: true,
       createdAt: '',
       updatedAt: '',
-    },  
+    },
     {
       id: '2',
       displayName: 'Marie Martin',
@@ -311,7 +311,7 @@ export class LoanNewPage {
       isActive: true,
       createdAt: '',
       updatedAt: '',
-    },  
+    },
     {
       id: '3',
       displayName: 'Pierre Durand',
@@ -320,7 +320,7 @@ export class LoanNewPage {
       isActive: true,
       createdAt: '',
       updatedAt: '',
-    },  
+    },
     {
       id: '4',
       displayName: 'Sophie Bernard',
@@ -329,16 +329,16 @@ export class LoanNewPage {
       isActive: true,
       createdAt: '',
       updatedAt: '',
-    },  
-  ]);
+    },
+  ];
 
   readonly filteredUsers = computed(() => {
     const query = this.userSearchQuery.toLowerCase().trim();
     if (!query) {
-      return this.mockUsers();
+      return this._mockUsers;
     }
 
-    return this.mockUsers().filter(
+    return this._mockUsers.filter(
       user =>
         user.displayName.toLowerCase().includes(query) ||
         user.email.toLowerCase().includes(query)
@@ -463,6 +463,14 @@ export class LoanNewPage {
         control?.markAsTouched();
       });
     }
+  }
+
+  trackByUserId(_index: number, user: User): string {
+    return user.id;
+  }
+
+  trackByBookId(_index: number, book: any): string {
+    return book.id;
   }
 
   goBack(): void {

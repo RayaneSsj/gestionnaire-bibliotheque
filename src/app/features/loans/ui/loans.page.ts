@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-loans',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page-container">
       <h1>Gestion des emprunts</h1>

@@ -3,7 +3,6 @@ import { Component, ChangeDetectionStrategy, inject, computed, OnInit, OnDestroy
 import { Router } from '@angular/router';
 
 import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
-import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
 import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { CatalogStore } from '../../catalog/catalog.store';
 import { LoansStore } from '../../loans/loans.store';
@@ -11,7 +10,7 @@ import { LoansStore } from '../../loans/loans.store';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, TruncatePipe, HighlightPipe, HasRoleDirective],
+  imports: [CommonModule, TruncatePipe, HasRoleDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -224,7 +223,7 @@ import { LoansStore } from '../../loans/loans.store';
   `,
 })
 export class AdminDashboardPage implements OnInit, OnDestroy {
-  private refreshInterval?: number;
+  private refreshInterval?: ReturnType<typeof setInterval>;
   readonly catalogStore = inject(CatalogStore);
   readonly loansStore = inject(LoansStore);
   private readonly router = inject(Router);
@@ -233,7 +232,7 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Rafraîchir les données toutes les 15 secondes
-    this.refreshInterval = setInterval(() => {
+    this.refreshInterval = window.setInterval(() => {
       this.catalogStore.refreshBooks();
       this.loansStore.refreshLoans();
     }, 15000);
@@ -241,7 +240,7 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
+      window.clearInterval(this.refreshInterval);
     }
   }
 

@@ -70,7 +70,7 @@ import { LoansStore } from '../loans.store';
       <div class="mb-6">
         <nav class="flex space-x-8 border-b border-gray-200">
           <button
-            *ngFor="let tab of tabs"
+            *ngFor="let tab of tabs; trackBy: trackByTabKey"
             (click)="selectedTab = tab.key"
             [class]="getTabClass(tab.key)"
             class="py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
@@ -327,8 +327,12 @@ export class MyLoansPage {
     }
   }
 
+  trackByTabKey(_index: number, tab: { key: string; label: string }): string {
+    return tab.key;
+  }
+
   trackByLoanId(_index: number, loan: any): string {
-     
+
     return loan.id;
   }
 

@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page-container">
       <h1>Administration</h1>

@@ -12,8 +12,6 @@ import { Router } from '@angular/router';
 
 import { AuthStore, FocusManagementService } from '../../../core';
 import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
-import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
-import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { LoansStore } from '../../loans/loans.store';
 import { CatalogStore } from '../catalog.store';
 
@@ -22,7 +20,7 @@ import { BookCardComponent } from './book-card.component';
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, BookCardComponent, TruncatePipe, HighlightPipe, HasRoleDirective],
+  imports: [CommonModule, FormsModule, BookCardComponent, HasRoleDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -134,7 +132,7 @@ import { BookCardComponent } from './book-card.component';
               >
                 <option value="">Toutes les catégories</option>
                 <option
-                  *ngFor="let category of catalogStore.categories()"
+                  *ngFor="let category of catalogStore.categories(); trackBy: trackByCategoryId"
                   [value]="category.id"
                 >
                   {{ category.name }}
@@ -277,6 +275,10 @@ export class CatalogPage implements OnInit, OnDestroy {
 
   onAddBook(): void {
     this.router.navigate(['/catalog', 'new']);
+  }
+
+  trackByCategoryId(_index: number, category: { id: string }): string {
+    return category.id;
   }
 
   trackByBookId(_index: number, book: { id: string }): string {
