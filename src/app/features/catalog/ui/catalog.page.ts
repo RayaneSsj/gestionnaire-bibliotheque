@@ -84,6 +84,7 @@ import { BookCardComponent } from './book-card.component';
               <div class="relative">
                 <input
                   id="search"
+                  name="search"
                   type="text"
                   [ngModel]="searchQuery()"
                   (ngModelChange)="onSearchChange($event)"
@@ -125,6 +126,7 @@ import { BookCardComponent } from './book-card.component';
               </label>
               <select
                 id="category"
+                name="category"
                 [ngModel]="selectedCategoryId()"
                 (ngModelChange)="onCategoryChange($event)"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
