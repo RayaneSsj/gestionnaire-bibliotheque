@@ -2,11 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 
 import { BookWithDetails } from '../catalog.store';
+import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
+import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
+import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
 
 @Component({
   selector: 'app-book-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TruncatePipe, HighlightPipe, HasRoleDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
@@ -21,7 +24,8 @@ import { BookWithDetails } from '../catalog.store';
       <div class="p-4">
         <div class="mb-2">
           <h3 class="font-semibold text-lg text-gray-900 line-clamp-2 mb-1">
-            {{ book().title }}
+            <!-- Utilisation du pipe highlight pour surligner le terme de recherche -->
+            <span [innerHTML]="book().title | highlight : searchTerm()"></span>
           </h3>
           <p class="text-sm text-gray-600 mb-2">
             par {{ book().author ? book().author!.firstName + ' ' + book().author!.lastName : 'Auteur inconnu' }}
@@ -29,6 +33,11 @@ import { BookWithDetails } from '../catalog.store';
           <span class="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
             {{ book().category?.name || 'Non catégorisé' }}
           </span>
+
+          <!-- Utilisation du pipe truncate pour afficher une description courte -->
+          <p *ngIf="book().description" class="text-xs text-gray-500 mt-2 leading-relaxed">
+            {{ book().description | truncate : 80 : '...' }}
+          </p>
         </div>
 
         <div class="mb-3">
@@ -67,8 +76,9 @@ import { BookWithDetails } from '../catalog.store';
               {{ borrowButtonText() }}
             </button>
             
+            <!-- Utilisation de la directive hasRole -->
             <button
-              *ngIf="showEditButton()"
+              *appHasRole="'admin'"
               type="button"
               (click)="onEdit()"
               class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors duration-200"
@@ -96,6 +106,7 @@ export class BookCardComponent {
   readonly showBorrowButton = input(false);
   readonly showEditButton = input(false);
   readonly canBorrowBook = input(true);
+  readonly searchTerm = input<string>('');
 
   readonly viewDetails = output<string>();
   readonly borrow = output<string>();

@@ -13,13 +13,16 @@ import { Router } from '@angular/router';
 import { AuthStore } from '../../../core';
 import { LoansStore } from '../../loans/loans.store';
 import { CatalogStore } from '../catalog.store';
+import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
+import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
+import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
 
 import { BookCardComponent } from './book-card.component';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, BookCardComponent],
+  imports: [CommonModule, FormsModule, BookCardComponent, TruncatePipe, HighlightPipe, HasRoleDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -27,8 +30,9 @@ import { BookCardComponent } from './book-card.component';
       <div class="mb-8">
         <div class="flex justify-between items-center mb-4">
           <h1 class="text-3xl font-bold text-gray-900">Catalogue des livres</h1>
+          <!-- Utilisation de la directive hasRole -->
           <button
-            *ngIf="authStore.isAdmin()"
+            *appHasRole="'admin'"
             type="button"
             (click)="onAddBook()"
             class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
@@ -151,6 +155,7 @@ import { BookCardComponent } from './book-card.component';
             trackBy: trackByBookId
           "
           [book]="book"
+          [searchTerm]="searchQuery()"
           [showBorrowButton]="
             authStore.isAuthenticated() && !authStore.isAdmin()
           "
@@ -181,7 +186,7 @@ export class CatalogPage implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Rafraîchir le catalogue toutes les 20 secondes pour tous les utilisateurs
-    this.refreshInterval = window.setInterval(() => {
+    this.refreshInterval = setInterval(() => {
       this.catalogStore.refreshBooks();
     }, 20000);
   }

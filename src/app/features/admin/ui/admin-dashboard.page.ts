@@ -2,13 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, inject, computed, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
+import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
+import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
+
 import { CatalogStore } from '../../catalog/catalog.store';
 import { LoansStore } from '../../loans/loans.store';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TruncatePipe, HighlightPipe, HasRoleDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -16,7 +20,9 @@ import { LoansStore } from '../../loans/loans.store';
       <div class="mb-8">
         <div class="flex justify-between items-center mb-4">
           <h1 class="text-3xl font-bold text-gray-900">Tableau de bord</h1>
+          <!-- Utilisation de la directive hasRole pour restreindre l'accès -->
           <button
+            *appHasRole="'admin'"
             type="button"
             (click)="onManageMembers()"
             class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
@@ -24,7 +30,8 @@ import { LoansStore } from '../../loans/loans.store';
             Gérer les membres
           </button>
         </div>
-        <p class="text-gray-600">Vue d'ensemble de l'activité de la bibliothèque</p>
+        <!-- Utilisation du pipe truncate pour limiter la description -->
+        <p class="text-gray-600">{{ descriptionText | truncate : 60 }}</p>
       </div>
 
       <!-- Cartes de statistiques principales -->
@@ -223,9 +230,11 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
   readonly loansStore = inject(LoansStore);
   private readonly router = inject(Router);
 
+  readonly descriptionText = "Vue d'ensemble complète de l'activité de la bibliothèque avec toutes les statistiques importantes et les indicateurs de performance pour une gestion optimale";
+
   ngOnInit(): void {
     // Rafraîchir les données toutes les 15 secondes
-    this.refreshInterval = window.setInterval(() => {
+    this.refreshInterval = setInterval(() => {
       this.catalogStore.refreshBooks();
       this.loansStore.refreshLoans();
     }, 15000);
