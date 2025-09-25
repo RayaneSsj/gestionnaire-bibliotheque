@@ -6,6 +6,7 @@ import {
 import { delay, of, throwError } from 'rxjs';
 
 import { UserRole, RegisterPayload } from '../../features/auth/data';
+import { Book } from '../../features/catalog/data';
 import { LoanStatus } from '../../shared/models';
 import {
   mockDb,
@@ -213,10 +214,20 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       ).pipe(delay(randomDelay));
     }
 
-    const bookData = req.body as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    const newBook = {
+    const bookData = req.body as Partial<Book>;
+    const newBook: Book = {
       id: `book_${Date.now()}`,
-      ...bookData,
+      title: bookData.title || '',
+      isbn: bookData.isbn || '',
+      authorId: bookData.authorId || '',
+      categoryId: bookData.categoryId || '',
+      totalCopies: bookData.totalCopies || 0,
+      availableCopies: bookData.availableCopies || 0,
+      description: bookData.description,
+      publishedDate: bookData.publishedDate,
+      language: bookData.language,
+      pages: bookData.pages,
+      publisher: bookData.publisher,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -247,20 +258,30 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
     }
 
     const originalBook = mockDb.books[bookIndex];
-    const updateData = req.body as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    const updateData = req.body as Partial<Book>;
 
     // Calculer les nouveaux exemplaires disponibles si totalCopies a changé
     let newAvailableCopies = originalBook.availableCopies;
-    if (updateData.totalCopies !== undefined && updateData.totalCopies !== originalBook.totalCopies) {
+    if (
+      updateData.totalCopies !== undefined &&
+      updateData.totalCopies !== originalBook.totalCopies
+    ) {
       // Calcul : nouveaux disponibles = anciens disponibles + différence de total
-      const copiesDifference = updateData.totalCopies - originalBook.totalCopies;
-      newAvailableCopies = Math.max(0, originalBook.availableCopies + copiesDifference);
+      const copiesDifference =
+        updateData.totalCopies - originalBook.totalCopies;
+      newAvailableCopies = Math.max(
+        0,
+        originalBook.availableCopies + copiesDifference
+      );
     }
 
     const updatedBook = {
       ...originalBook,
       ...updateData,
-      availableCopies: updateData.availableCopies !== undefined ? updateData.availableCopies : newAvailableCopies,
+      availableCopies:
+        updateData.availableCopies !== undefined
+          ? updateData.availableCopies
+          : newAvailableCopies,
       updatedAt: new Date().toISOString(),
     };
 
@@ -695,7 +716,10 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
 
     const { role } = req.body as { role: UserRole };
 
-    if (role && Object.values(UserRole).includes(role)) {
+    if (
+      role &&
+      [UserRole.ADMIN, UserRole.LIBRARIAN, UserRole.MEMBER].includes(role)
+    ) {
       mockDb.members[memberIndex].role = role;
       mockDb.members[memberIndex].updatedAt = new Date().toISOString();
 

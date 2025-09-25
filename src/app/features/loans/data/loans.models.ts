@@ -1,9 +1,11 @@
-export enum LoanStatus {
-  ACTIVE = "active",
-  RETURNED = "returned", 
-  OVERDUE = "overdue",
-  CANCELLED = "cancelled",
+export const enum LoanStatus {
+  ACTIVE = 'active', // eslint-disable-line no-unused-vars
+  RETURNED = 'returned', // eslint-disable-line no-unused-vars
+  OVERDUE = 'overdue', // eslint-disable-line no-unused-vars
+  CANCELLED = 'cancelled', // eslint-disable-line no-unused-vars
 }
+
+// Les exports explicites ont été supprimés car non utilisés
 
 export interface Loan {
   id: string;

@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { CatalogStore } from '../../catalog/catalog.store';
-import { LoanStatus } from '../data';
+import { LoanStatus, Loan } from '../data';
 import { LoansStore } from '../loans.store';
 
 @Component({
@@ -294,14 +294,14 @@ import { LoansStore } from '../loans.store';
   `,
 })
 export class AllLoansPage implements OnInit, OnDestroy {
-  private refreshInterval?: number;
+  private refreshInterval?: ReturnType<typeof globalThis.setInterval>;
   readonly loansStore = inject(LoansStore);
   readonly catalogStore = inject(CatalogStore);
   readonly router = inject(Router);
 
   ngOnInit(): void {
     // Rafraîchir les données toutes les 10 secondes pour la page admin
-    this.refreshInterval = window.setInterval(() => {
+    this.refreshInterval = globalThis.setInterval(() => {
       this.catalogStore.refreshBooks();
       this.loansStore.refreshLoans();
     }, 10000);
@@ -309,7 +309,7 @@ export class AllLoansPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
+      globalThis.clearInterval(this.refreshInterval);
     }
   }
 
@@ -406,18 +406,15 @@ export class AllLoansPage implements OnInit, OnDestroy {
     }, 100);
   }
 
-  canReturn(loan: any): boolean {
-     
+  canReturn(loan: Loan): boolean {
     return loan.status === LoanStatus.ACTIVE;
   }
 
-  canRenew(loan: any): boolean {
-     
+  canRenew(loan: Loan): boolean {
     return loan.status === LoanStatus.ACTIVE && loan.renewalCount < 2;
   }
 
-  canCancel(loan: any): boolean {
-     
+  canCancel(loan: Loan): boolean {
     return loan.status === LoanStatus.ACTIVE;
   }
 
@@ -451,8 +448,7 @@ export class AllLoansPage implements OnInit, OnDestroy {
     }
   }
 
-  getDueDateClass(loan: any): string {
-     
+  getDueDateClass(loan: Loan): string {
     if (loan.status === LoanStatus.RETURNED) {
       return 'text-gray-600';
     }
@@ -486,8 +482,7 @@ export class AllLoansPage implements OnInit, OnDestroy {
     }
   }
 
-  trackByLoanId(_index: number, loan: any): string {
-     
+  trackByLoanId(_index: number, loan: Loan): string {
     return loan.id;
   }
 }

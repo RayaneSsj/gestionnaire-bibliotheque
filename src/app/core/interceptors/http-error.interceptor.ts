@@ -17,7 +17,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      let errorMessage = 'Une erreur inattendue s\'est produite';
+      let errorMessage = "Une erreur inattendue s'est produite";
       let shouldLogout = false;
 
       console.error('Erreur HTTP interceptée:', {
@@ -30,7 +30,8 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
       switch (error.status) {
         case 0:
-          errorMessage = 'Impossible de contacter le serveur. Vérifiez votre connexion internet.';
+          errorMessage =
+            'Impossible de contacter le serveur. Vérifiez votre connexion internet.';
           break;
 
         case 400:
@@ -42,12 +43,15 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
           break;
 
         case 401:
-          errorMessage = error.error?.message || 'Session expirée. Veuillez vous reconnecter.';
+          errorMessage =
+            error.error?.message ||
+            'Session expirée. Veuillez vous reconnecter.';
           shouldLogout = true;
           break;
 
         case 403:
-          errorMessage = 'Vous n\'avez pas les permissions nécessaires pour effectuer cette action.';
+          errorMessage =
+            "Vous n'avez pas les permissions nécessaires pour effectuer cette action.";
           break;
 
         case 404:
@@ -59,25 +63,31 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
           break;
 
         case 409:
-          errorMessage = error.error?.message || 'Conflit détecté. Cette action ne peut pas être effectuée.';
+          errorMessage =
+            error.error?.message ||
+            'Conflit détecté. Cette action ne peut pas être effectuée.';
           break;
 
         case 422:
-          errorMessage = error.error?.message || 'Données invalides. Vérifiez votre saisie.';
+          errorMessage =
+            error.error?.message || 'Données invalides. Vérifiez votre saisie.';
           break;
 
         case 429:
-          errorMessage = 'Trop de requêtes. Veuillez patienter avant de réessayer.';
+          errorMessage =
+            'Trop de requêtes. Veuillez patienter avant de réessayer.';
           break;
 
         case 500:
-          errorMessage = 'Erreur interne du serveur. Veuillez réessayer plus tard.';
+          errorMessage =
+            'Erreur interne du serveur. Veuillez réessayer plus tard.';
           break;
 
         case 502:
         case 503:
         case 504:
-          errorMessage = 'Service temporairement indisponible. Veuillez réessayer plus tard.';
+          errorMessage =
+            'Service temporairement indisponible. Veuillez réessayer plus tard.';
           break;
 
         default:
@@ -89,7 +99,9 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       if (shouldLogout && authStore.isAuthenticated()) {
-        console.warn('Déconnexion automatique due à une erreur d\'authentification');
+        console.warn(
+          "Déconnexion automatique due à une erreur d'authentification"
+        );
         authStore.logout();
         router.navigate(['/auth/login']);
       }
@@ -100,13 +112,19 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
         details: error.error,
       };
 
-      const errorConfig: any = {
+      const errorConfig: {
+        error: ApiError;
+        headers: HttpErrorResponse['headers'];
+        status: number;
+        statusText: string;
+        url?: string;
+      } = {
         error: apiError,
         headers: error.headers,
         status: error.status,
         statusText: error.statusText,
       };
-      
+
       if (error.url) {
         errorConfig.url = error.url;
       }

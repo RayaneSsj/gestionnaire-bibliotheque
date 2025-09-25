@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AuthStore } from '../../core/auth.store';
@@ -9,18 +9,22 @@ import { HasRoleDirective } from './has-role.directive';
 @Component({
   template: `
     <div *appHasRole="'admin'" id="admin-content">Admin content</div>
-    <div *appHasRole="'librarian'" id="librarian-content">Librarian content</div>
+    <div *appHasRole="'librarian'" id="librarian-content">
+      Librarian content
+    </div>
     <div *appHasRole="'member'" id="member-content">Member content</div>
   `,
   standalone: true,
-  imports: [HasRoleDirective]
+  imports: [HasRoleDirective],
 })
-class TestComponent { }
+class TestComponent {}
 
 describe('HasRoleDirective', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
-  let mockAuthStore: any;
+  let mockAuthStore: Partial<AuthStore> & {
+    currentUser: WritableSignal<User | null>;
+  };
 
   const createMockUser = (role: UserRole): User => ({
     id: '1',
@@ -29,19 +33,17 @@ describe('HasRoleDirective', () => {
     role,
     isActive: true,
     createdAt: '2023-01-01T00:00:00Z',
-    updatedAt: '2023-01-01T00:00:00Z'
+    updatedAt: '2023-01-01T00:00:00Z',
   });
 
   beforeEach(async () => {
     mockAuthStore = {
-      currentUser: signal(null)
+      currentUser: signal<User | null>(null),
     };
 
     await TestBed.configureTestingModule({
       imports: [TestComponent, HasRoleDirective],
-      providers: [
-        { provide: AuthStore, useValue: mockAuthStore }
-      ]
+      providers: [{ provide: AuthStore, useValue: mockAuthStore }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestComponent);
@@ -60,7 +62,9 @@ describe('HasRoleDirective', () => {
 
     it('should not display any role-protected content', () => {
       expect(fixture.nativeElement.querySelector('#admin-content')).toBeNull();
-      expect(fixture.nativeElement.querySelector('#librarian-content')).toBeNull();
+      expect(
+        fixture.nativeElement.querySelector('#librarian-content')
+      ).toBeNull();
       expect(fixture.nativeElement.querySelector('#member-content')).toBeNull();
     });
   });
@@ -73,18 +77,34 @@ describe('HasRoleDirective', () => {
     });
 
     it('should display admin content', () => {
-      expect(fixture.nativeElement.querySelector('#admin-content')).toBeTruthy();
-      expect(fixture.nativeElement.querySelector('#admin-content').textContent.trim()).toBe('Admin content');
+      expect(
+        fixture.nativeElement.querySelector('#admin-content')
+      ).toBeTruthy();
+      expect(
+        fixture.nativeElement.querySelector('#admin-content').textContent.trim()
+      ).toBe('Admin content');
     });
 
     it('should display librarian content (hierarchy)', () => {
-      expect(fixture.nativeElement.querySelector('#librarian-content')).toBeTruthy();
-      expect(fixture.nativeElement.querySelector('#librarian-content').textContent.trim()).toBe('Librarian content');
+      expect(
+        fixture.nativeElement.querySelector('#librarian-content')
+      ).toBeTruthy();
+      expect(
+        fixture.nativeElement
+          .querySelector('#librarian-content')
+          .textContent.trim()
+      ).toBe('Librarian content');
     });
 
     it('should display member content (hierarchy)', () => {
-      expect(fixture.nativeElement.querySelector('#member-content')).toBeTruthy();
-      expect(fixture.nativeElement.querySelector('#member-content').textContent.trim()).toBe('Member content');
+      expect(
+        fixture.nativeElement.querySelector('#member-content')
+      ).toBeTruthy();
+      expect(
+        fixture.nativeElement
+          .querySelector('#member-content')
+          .textContent.trim()
+      ).toBe('Member content');
     });
   });
 
@@ -100,13 +120,25 @@ describe('HasRoleDirective', () => {
     });
 
     it('should display librarian content', () => {
-      expect(fixture.nativeElement.querySelector('#librarian-content')).toBeTruthy();
-      expect(fixture.nativeElement.querySelector('#librarian-content').textContent.trim()).toBe('Librarian content');
+      expect(
+        fixture.nativeElement.querySelector('#librarian-content')
+      ).toBeTruthy();
+      expect(
+        fixture.nativeElement
+          .querySelector('#librarian-content')
+          .textContent.trim()
+      ).toBe('Librarian content');
     });
 
     it('should display member content (hierarchy)', () => {
-      expect(fixture.nativeElement.querySelector('#member-content')).toBeTruthy();
-      expect(fixture.nativeElement.querySelector('#member-content').textContent.trim()).toBe('Member content');
+      expect(
+        fixture.nativeElement.querySelector('#member-content')
+      ).toBeTruthy();
+      expect(
+        fixture.nativeElement
+          .querySelector('#member-content')
+          .textContent.trim()
+      ).toBe('Member content');
     });
   });
 
@@ -122,12 +154,20 @@ describe('HasRoleDirective', () => {
     });
 
     it('should not display librarian content', () => {
-      expect(fixture.nativeElement.querySelector('#librarian-content')).toBeNull();
+      expect(
+        fixture.nativeElement.querySelector('#librarian-content')
+      ).toBeNull();
     });
 
     it('should display member content', () => {
-      expect(fixture.nativeElement.querySelector('#member-content')).toBeTruthy();
-      expect(fixture.nativeElement.querySelector('#member-content').textContent.trim()).toBe('Member content');
+      expect(
+        fixture.nativeElement.querySelector('#member-content')
+      ).toBeTruthy();
+      expect(
+        fixture.nativeElement
+          .querySelector('#member-content')
+          .textContent.trim()
+      ).toBe('Member content');
     });
   });
 });

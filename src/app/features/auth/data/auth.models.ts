@@ -1,11 +1,11 @@
-export enum UserRole {
-  ADMIN = 'admin',
-  LIBRARIAN = 'librarian', 
-  MEMBER = 'member',
+export const enum UserRole {
+  ADMIN = 'admin', // eslint-disable-line no-unused-vars
+  LIBRARIAN = 'librarian', // eslint-disable-line no-unused-vars
+  MEMBER = 'member', // eslint-disable-line no-unused-vars
 }
 
 // Export explicite pour ESLint
-export const USER_ROLES = Object.values(UserRole);
+export const USER_ROLES = [UserRole.ADMIN, UserRole.LIBRARIAN, UserRole.MEMBER];
 
 export interface User {
   id: string;

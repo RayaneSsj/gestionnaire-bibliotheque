@@ -8,7 +8,7 @@ import {
 
 import { AuthStore } from '../../../core';
 import { CatalogStore } from '../../catalog/catalog.store';
-import { LoanStatus } from '../data';
+import { LoanStatus, Loan } from '../data';
 import { LoansStore } from '../loans.store';
 
 @Component({
@@ -268,8 +268,7 @@ export class MyLoansPage {
     }
   }
 
-  getDueDateClass(loan: any): string {
-     
+  getDueDateClass(loan: Loan): string {
     if (loan.status === LoanStatus.RETURNED) {
       return '';
     }
@@ -291,13 +290,11 @@ export class MyLoansPage {
     return '';
   }
 
-  canReturn(loan: any): boolean {
-     
+  canReturn(loan: Loan): boolean {
     return loan.status === LoanStatus.ACTIVE;
   }
 
-  canRenew(loan: any): boolean {
-     
+  canRenew(loan: Loan): boolean {
     return loan.status === LoanStatus.ACTIVE && loan.renewalCount < 2;
   }
 
@@ -331,8 +328,7 @@ export class MyLoansPage {
     return tab.key;
   }
 
-  trackByLoanId(_index: number, loan: any): string {
-
+  trackByLoanId(_index: number, loan: Loan): string {
     return loan.id;
   }
 

@@ -51,8 +51,10 @@ export class CatalogStore {
     if (query) {
       filtered = filtered.filter(book => {
         const titleMatch = book.title.toLowerCase().includes(query);
-        const authorMatch = book.author 
-          ? `${book.author.firstName} ${book.author.lastName}`.toLowerCase().includes(query)
+        const authorMatch = book.author
+          ? `${book.author.firstName} ${book.author.lastName}`
+              .toLowerCase()
+              .includes(query)
           : false;
         return titleMatch || authorMatch;
       });
@@ -61,13 +63,13 @@ export class CatalogStore {
     return filtered;
   });
 
-  readonly availableBooks = computed(() => 
+  readonly availableBooks = computed(() =>
     this.filteredBooks().filter(book => book.availableCopies > 0)
   );
 
   readonly totalBooks = computed(() => this._books().length);
-  readonly totalAvailableBooks = computed(() => 
-    this._books().filter(book => book.availableCopies > 0).length
+  readonly totalAvailableBooks = computed(
+    () => this._books().filter(book => book.availableCopies > 0).length
   );
 
   constructor() {
@@ -78,9 +80,9 @@ export class CatalogStore {
     effect(() => {
       const query = this._query();
       if (query) {
-        sessionStorage.setItem(this.QUERY_STORAGE_KEY, query);
+        globalThis.sessionStorage?.setItem(this.QUERY_STORAGE_KEY, query);
       } else {
-        sessionStorage.removeItem(this.QUERY_STORAGE_KEY);
+        globalThis.sessionStorage?.removeItem(this.QUERY_STORAGE_KEY);
       }
     });
 
@@ -107,55 +109,70 @@ export class CatalogStore {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.http.post<Book>('/api/books', bookData).pipe(
-      tap(newBook => {
-        const enrichedBook = this.enrichBookWithDetails(newBook);
-        this._books.update(books => [...books, enrichedBook]);
-      }),
-      catchError(error => {
-        this._error.set(error.error?.message || 'Erreur lors de la création du livre');
-        return of(null);
-      })
-    ).subscribe(() => {
-      this._isLoading.set(false);
-    });
+    this.http
+      .post<Book>('/api/books', bookData)
+      .pipe(
+        tap(newBook => {
+          const enrichedBook = this.enrichBookWithDetails(newBook);
+          this._books.update(books => [...books, enrichedBook]);
+        }),
+        catchError(error => {
+          this._error.set(
+            error.error?.message || 'Erreur lors de la création du livre'
+          );
+          return of(null);
+        })
+      )
+      .subscribe(() => {
+        this._isLoading.set(false);
+      });
   }
 
   updateBook(bookId: string, bookData: Partial<Book>): void {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.http.put<Book>(`/api/books/${bookId}`, bookData).pipe(
-      tap(updatedBook => {
-        const enrichedBook = this.enrichBookWithDetails(updatedBook);
-        this._books.update(books => 
-          books.map(book => book.id === bookId ? enrichedBook : book)
-        );
-      }),
-      catchError(error => {
-        this._error.set(error.error?.message || 'Erreur lors de la mise à jour du livre');
-        return of(null);
-      })
-    ).subscribe(() => {
-      this._isLoading.set(false);
-    });
+    this.http
+      .put<Book>(`/api/books/${bookId}`, bookData)
+      .pipe(
+        tap(updatedBook => {
+          const enrichedBook = this.enrichBookWithDetails(updatedBook);
+          this._books.update(books =>
+            books.map(book => (book.id === bookId ? enrichedBook : book))
+          );
+        }),
+        catchError(error => {
+          this._error.set(
+            error.error?.message || 'Erreur lors de la mise à jour du livre'
+          );
+          return of(null);
+        })
+      )
+      .subscribe(() => {
+        this._isLoading.set(false);
+      });
   }
 
   deleteBook(bookId: string): void {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.http.delete(`/api/books/${bookId}`).pipe(
-      tap(() => {
-        this._books.update(books => books.filter(book => book.id !== bookId));
-      }),
-      catchError(error => {
-        this._error.set(error.error?.message || 'Erreur lors de la suppression du livre');
-        return of(null);
-      })
-    ).subscribe(() => {
-      this._isLoading.set(false);
-    });
+    this.http
+      .delete(`/api/books/${bookId}`)
+      .pipe(
+        tap(() => {
+          this._books.update(books => books.filter(book => book.id !== bookId));
+        }),
+        catchError(error => {
+          this._error.set(
+            error.error?.message || 'Erreur lors de la suppression du livre'
+          );
+          return of(null);
+        })
+      )
+      .subscribe(() => {
+        this._isLoading.set(false);
+      });
   }
 
   getBookById(bookId: string): BookWithDetails | undefined {
@@ -172,63 +189,75 @@ export class CatalogStore {
     this._error.set(null);
 
     // Charger authors et categories en parallèle
-    Promise.all([
-      this.loadAuthors(),
-      this.loadCategories()
-    ]).then(() => {
-      // Puis charger les livres une fois qu'on a les données de référence
-      this.loadBooks();
-    }).catch(() => {
-      this._isLoading.set(false);
-    });
+    Promise.all([this.loadAuthors(), this.loadCategories()])
+      .then(() => {
+        // Puis charger les livres une fois qu'on a les données de référence
+        this.loadBooks();
+      })
+      .catch(() => {
+        this._isLoading.set(false);
+      });
   }
 
   private loadBooks(): void {
-    this.http.get<Book[]>('/api/books').pipe(
-      tap(books => {
-        const enrichedBooks = books.map(book => this.enrichBookWithDetails(book));
-        this._books.set(enrichedBooks);
-      }),
-      catchError(error => {
-        this._error.set(error.error?.message || 'Erreur lors du chargement des livres');
-        return of([]);
-      })
-    ).subscribe(() => {
-      this._isLoading.set(false);
-    });
+    this.http
+      .get<Book[]>('/api/books')
+      .pipe(
+        tap(books => {
+          const enrichedBooks = books.map(book =>
+            this.enrichBookWithDetails(book)
+          );
+          this._books.set(enrichedBooks);
+        }),
+        catchError(error => {
+          this._error.set(
+            error.error?.message || 'Erreur lors du chargement des livres'
+          );
+          return of([]);
+        })
+      )
+      .subscribe(() => {
+        this._isLoading.set(false);
+      });
   }
 
   private loadAuthors(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.http.get<Author[]>('/api/authors').pipe(
-        tap(authors => {
-          this._authors.set(authors);
-        }),
-        catchError(error => {
-          console.error('Erreur lors du chargement des auteurs:', error);
-          return of([]);
-        })
-      ).subscribe({
-        next: () => resolve(),
-        error: () => reject()
-      });
+      this.http
+        .get<Author[]>('/api/authors')
+        .pipe(
+          tap(authors => {
+            this._authors.set(authors);
+          }),
+          catchError(error => {
+            console.error('Erreur lors du chargement des auteurs:', error);
+            return of([]);
+          })
+        )
+        .subscribe({
+          next: () => resolve(),
+          error: () => reject(),
+        });
     });
   }
 
   private loadCategories(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.http.get<Category[]>('/api/categories').pipe(
-        tap(categories => {
-          this._categories.set(categories);
-        }),
-        catchError(error => {
-          console.error('Erreur lors du chargement des catégories:', error);
-          return of([]);
-        })
-      ).subscribe({
-        next: () => resolve(),
-        error: () => reject()
-      });
+      this.http
+        .get<Category[]>('/api/categories')
+        .pipe(
+          tap(categories => {
+            this._categories.set(categories);
+          }),
+          catchError(error => {
+            console.error('Erreur lors du chargement des catégories:', error);
+            return of([]);
+          })
+        )
+        .subscribe({
+          next: () => resolve(),
+          error: () => reject(),
+        });
     });
   }
 
@@ -245,12 +274,17 @@ export class CatalogStore {
 
   private rehydrateQuery(): void {
     try {
-      const storedQuery = sessionStorage.getItem(this.QUERY_STORAGE_KEY);
+      const storedQuery = globalThis.sessionStorage?.getItem(
+        this.QUERY_STORAGE_KEY
+      );
       if (storedQuery) {
         this._query.set(storedQuery);
       }
     } catch (error) {
-      console.warn('Impossible de recharger la query depuis sessionStorage:', error);
+      console.warn(
+        'Impossible de recharger la query depuis sessionStorage:',
+        error
+      );
     }
   }
 }

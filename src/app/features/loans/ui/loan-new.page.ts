@@ -15,8 +15,9 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { User } from '../../auth/data';
-import { CatalogStore } from '../../catalog/catalog.store';
+import { User, UserRole } from '../../auth/data';
+import { CatalogStore, BookWithDetails } from '../../catalog/catalog.store';
+import { Book } from '../../catalog/data';
 import { LoansStore } from '../loans.store';
 
 @Component({
@@ -290,7 +291,7 @@ export class LoanNewPage {
 
   // Selected items
   selectedUser: User | null = null;
-  selectedBook: any = null; // eslint-disable-line @typescript-eslint/no-explicit-any
+  selectedBook: BookWithDetails | null = null;
 
   // Mock users data (in real app, this would come from a UsersStore)
   private readonly _mockUsers = [
@@ -298,7 +299,7 @@ export class LoanNewPage {
       id: '1',
       displayName: 'Jean Dupont',
       email: 'jean.dupont@example.com',
-      role: 'member' as any,
+      role: UserRole.MEMBER,
       isActive: true,
       createdAt: '',
       updatedAt: '',
@@ -307,7 +308,7 @@ export class LoanNewPage {
       id: '2',
       displayName: 'Marie Martin',
       email: 'marie.martin@example.com',
-      role: 'member' as any,
+      role: UserRole.MEMBER,
       isActive: true,
       createdAt: '',
       updatedAt: '',
@@ -316,7 +317,7 @@ export class LoanNewPage {
       id: '3',
       displayName: 'Pierre Durand',
       email: 'pierre.durand@example.com',
-      role: 'member' as any,
+      role: UserRole.MEMBER,
       isActive: true,
       createdAt: '',
       updatedAt: '',
@@ -325,7 +326,7 @@ export class LoanNewPage {
       id: '4',
       displayName: 'Sophie Bernard',
       email: 'sophie.bernard@example.com',
-      role: 'member' as any,
+      role: UserRole.MEMBER,
       isActive: true,
       createdAt: '',
       updatedAt: '',
@@ -366,9 +367,11 @@ export class LoanNewPage {
 
   constructor() {
     // Écouter les clics pour fermer les dropdowns
-    if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
-      window.document.addEventListener('click', event => {
-         
+    if (
+      typeof globalThis !== 'undefined' &&
+      typeof globalThis.document !== 'undefined'
+    ) {
+      globalThis.document.addEventListener('click', event => {
         const target = event.target as HTMLElement;
         if (!target.closest('#userSearch') && !target.closest('.absolute')) {
           this.showUserDropdown = false;
@@ -406,9 +409,8 @@ export class LoanNewPage {
     this.showUserDropdown = false;
   }
 
-  selectBook(book: any): void {
-     
-    this.selectedBook = book;
+  selectBook(book: Book): void {
+    this.selectedBook = this.catalogStore.getBookById(book.id) || null;
     this.bookSearchQuery = book.title;
     this.loanForm.patchValue({ bookId: book.id });
     this.showBookDropdown = false;
@@ -469,7 +471,7 @@ export class LoanNewPage {
     return user.id;
   }
 
-  trackByBookId(_index: number, book: any): string {
+  trackByBookId(_index: number, book: Book): string {
     return book.id;
   }
 

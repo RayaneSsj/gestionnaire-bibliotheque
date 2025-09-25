@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -11,8 +11,8 @@ import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
 import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { User, UserRole } from '../../auth/data';
 import { LoansStore } from '../../loans/loans.store';
-import { CatalogStore } from '../catalog.store';
-import { Book, Category, Author } from '../data';
+import { CatalogStore, BookWithDetails } from '../catalog.store';
+import { Category, Author } from '../data';
 
 import { BookCardComponent } from './book-card.component';
 import { CatalogPage } from './catalog.page';
@@ -20,13 +20,22 @@ import { CatalogPage } from './catalog.page';
 describe('CatalogPage Integration Test', () => {
   let component: CatalogPage;
   let fixture: ComponentFixture<CatalogPage>;
-  let mockCatalogStore: any;
-  let mockAuthStore: any;
-  let mockLoansStore: any;
-  let mockRouter: any;
-  let mockFocusService: any;
+  let mockCatalogStore: Partial<CatalogStore> & {
+    books: WritableSignal<BookWithDetails[]>;
+    filteredBooks: WritableSignal<BookWithDetails[]>;
+    categories: WritableSignal<Category[]>;
+    authors: WritableSignal<Author[]>;
+    query: WritableSignal<string>;
+    selectedCategoryId: WritableSignal<string | null>;
+    totalBooks: WritableSignal<number>;
+    totalAvailableBooks: WritableSignal<number>;
+  };
+  let mockAuthStore: Partial<AuthStore>;
+  let mockLoansStore: Partial<LoansStore>;
+  let mockRouter: Partial<Router>;
+  let mockFocusService: Partial<FocusManagementService>;
 
-  const mockBooks: Book[] = [
+  const mockBooksWithDetails: BookWithDetails[] = [
     {
       id: '1',
       title: 'Angular Guide',
@@ -41,7 +50,22 @@ describe('CatalogPage Integration Test', () => {
       pages: 300,
       publisher: 'Tech Books',
       createdAt: '2023-01-01T00:00:00Z',
-      updatedAt: '2023-01-01T00:00:00Z'
+      updatedAt: '2023-01-01T00:00:00Z',
+      author: {
+        id: '1',
+        firstName: 'John',
+        lastName: 'Doe',
+        biography: 'Tech author',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+      },
+      category: {
+        id: '1',
+        name: 'Programming',
+        description: 'Programming books',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+      },
     },
     {
       id: '2',
@@ -57,8 +81,23 @@ describe('CatalogPage Integration Test', () => {
       pages: 250,
       publisher: 'Dev Press',
       createdAt: '2023-01-01T00:00:00Z',
-      updatedAt: '2023-01-01T00:00:00Z'
-    }
+      updatedAt: '2023-01-01T00:00:00Z',
+      author: {
+        id: '2',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        biography: 'TS expert',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+      },
+      category: {
+        id: '1',
+        name: 'Programming',
+        description: 'Programming books',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+      },
+    },
   ];
 
   const mockCategories: Category[] = [
@@ -67,15 +106,15 @@ describe('CatalogPage Integration Test', () => {
       name: 'Programming',
       description: 'Programming books',
       createdAt: '2023-01-01T00:00:00Z',
-      updatedAt: '2023-01-01T00:00:00Z'
+      updatedAt: '2023-01-01T00:00:00Z',
     },
     {
       id: '2',
       name: 'Web Development',
       description: 'Web dev books',
       createdAt: '2023-01-01T00:00:00Z',
-      updatedAt: '2023-01-01T00:00:00Z'
-    }
+      updatedAt: '2023-01-01T00:00:00Z',
+    },
   ];
 
   const mockAuthors: Author[] = [
@@ -85,7 +124,7 @@ describe('CatalogPage Integration Test', () => {
       lastName: 'Doe',
       biography: 'Tech author',
       createdAt: '2023-01-01T00:00:00Z',
-      updatedAt: '2023-01-01T00:00:00Z'
+      updatedAt: '2023-01-01T00:00:00Z',
     },
     {
       id: '2',
@@ -93,8 +132,8 @@ describe('CatalogPage Integration Test', () => {
       lastName: 'Smith',
       biography: 'TS expert',
       createdAt: '2023-01-01T00:00:00Z',
-      updatedAt: '2023-01-01T00:00:00Z'
-    }
+      updatedAt: '2023-01-01T00:00:00Z',
+    },
   ];
 
   const mockUser: User = {
@@ -104,41 +143,46 @@ describe('CatalogPage Integration Test', () => {
     role: UserRole.ADMIN,
     isActive: true,
     createdAt: '2023-01-01T00:00:00Z',
-    updatedAt: '2023-01-01T00:00:00Z'
+    updatedAt: '2023-01-01T00:00:00Z',
   };
 
   beforeEach(async () => {
     mockCatalogStore = {
-      books: signal(mockBooks),
+      books: signal(mockBooksWithDetails),
       categories: signal(mockCategories),
       authors: signal(mockAuthors),
       query: signal(''),
       selectedCategoryId: signal(null),
-      filteredBooks: signal(mockBooks),
-      totalBooks: signal(mockBooks.length),
-      totalAvailableBooks: signal(mockBooks.reduce((sum, book) => sum + book.availableCopies, 0)),
+      filteredBooks: signal(mockBooksWithDetails),
+      totalBooks: signal(mockBooksWithDetails.length),
+      totalAvailableBooks: signal(
+        mockBooksWithDetails.reduce(
+          (sum, book) => sum + book.availableCopies,
+          0
+        )
+      ),
       setQuery: jasmine.createSpy('setQuery'),
       setSelectedCategoryId: jasmine.createSpy('setSelectedCategoryId'),
       clearFilters: jasmine.createSpy('clearFilters'),
-      refreshBooks: jasmine.createSpy('refreshBooks')
+      refreshBooks: jasmine.createSpy('refreshBooks'),
     };
 
     mockAuthStore = {
       currentUser: signal(mockUser),
       isAuthenticated: signal(true),
-      isAdmin: signal(true)
+      isAdmin: signal(true),
     };
 
     mockLoansStore = {
-      createLoan: jasmine.createSpy('createLoan')
+      createLoan: jasmine.createSpy('createLoan'),
     };
 
     mockRouter = {
-      navigate: jasmine.createSpy('navigate')
+      navigate: jasmine.createSpy('navigate'),
     };
 
     mockFocusService = {
-      focusOnMainHeading: jasmine.createSpy('focusOnMainHeading')
+      focusOnMainHeading: jasmine.createSpy('focusOnMainHeading'),
     };
 
     await TestBed.configureTestingModule({
@@ -149,15 +193,15 @@ describe('CatalogPage Integration Test', () => {
         BookCardComponent,
         TruncatePipe,
         HighlightPipe,
-        HasRoleDirective
+        HasRoleDirective,
       ],
       providers: [
         { provide: CatalogStore, useValue: mockCatalogStore },
         { provide: AuthStore, useValue: mockAuthStore },
         { provide: LoansStore, useValue: mockLoansStore },
         { provide: Router, useValue: mockRouter },
-        { provide: FocusManagementService, useValue: mockFocusService }
-      ]
+        { provide: FocusManagementService, useValue: mockFocusService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CatalogPage);
@@ -177,25 +221,37 @@ describe('CatalogPage Integration Test', () => {
     it('should display the page title', () => {
       const titleElement = fixture.debugElement.query(By.css('h1'));
       expect(titleElement).toBeTruthy();
-      expect(titleElement.nativeElement.textContent.trim()).toBe('Catalogue des livres');
+      expect(titleElement.nativeElement.textContent.trim()).toBe(
+        'Catalogue des livres'
+      );
       expect(titleElement.nativeElement.id).toBe('page-title');
     });
 
     it('should display statistics section', () => {
-      const statsSection = fixture.debugElement.query(By.css('[aria-labelledby="stats-title"]'));
+      const statsSection = fixture.debugElement.query(
+        By.css('[aria-labelledby="stats-title"]')
+      );
       expect(statsSection).toBeTruthy();
 
-      const totalBooksElement = fixture.debugElement.query(By.css('.text-blue-600'));
+      const totalBooksElement = fixture.debugElement.query(
+        By.css('.text-blue-600')
+      );
       expect(totalBooksElement.nativeElement.textContent.trim()).toBe('2');
 
-      const availableBooksElement = fixture.debugElement.query(By.css('.text-green-600'));
+      const availableBooksElement = fixture.debugElement.query(
+        By.css('.text-green-600')
+      );
       expect(availableBooksElement.nativeElement.textContent.trim()).toBe('4');
     });
 
     it('should display add book button for admin users', () => {
-      const addButton = fixture.debugElement.query(By.css('[aria-label="Ajouter un nouveau livre au catalogue"]'));
+      const addButton = fixture.debugElement.query(
+        By.css('[aria-label="Ajouter un nouveau livre au catalogue"]')
+      );
       expect(addButton).toBeTruthy();
-      expect(addButton.nativeElement.textContent.trim()).toContain('Ajouter un livre');
+      expect(addButton.nativeElement.textContent.trim()).toContain(
+        'Ajouter un livre'
+      );
     });
   });
 
@@ -203,8 +259,12 @@ describe('CatalogPage Integration Test', () => {
     it('should render search input with proper attributes', () => {
       const searchInput = fixture.debugElement.query(By.css('#search'));
       expect(searchInput).toBeTruthy();
-      expect(searchInput.nativeElement.placeholder).toBe('Rechercher par titre ou auteur...');
-      expect(searchInput.nativeElement.getAttribute('aria-describedby')).toBe('search-help');
+      expect(searchInput.nativeElement.placeholder).toBe(
+        'Rechercher par titre ou auteur...'
+      );
+      expect(searchInput.nativeElement.getAttribute('aria-describedby')).toBe(
+        'search-help'
+      );
     });
 
     it('should call catalogStore.setQuery when search input changes', () => {
@@ -218,13 +278,19 @@ describe('CatalogPage Integration Test', () => {
     it('should render category select with options', () => {
       const categorySelect = fixture.debugElement.query(By.css('#category'));
       expect(categorySelect).toBeTruthy();
-      expect(categorySelect.nativeElement.getAttribute('aria-describedby')).toBe('category-help');
+      expect(
+        categorySelect.nativeElement.getAttribute('aria-describedby')
+      ).toBe('category-help');
 
       const options = categorySelect.queryAll(By.css('option'));
       expect(options.length).toBe(3);
-      expect(options[0].nativeElement.textContent.trim()).toBe('Toutes les catégories');
+      expect(options[0].nativeElement.textContent.trim()).toBe(
+        'Toutes les catégories'
+      );
       expect(options[1].nativeElement.textContent.trim()).toBe('Programming');
-      expect(options[2].nativeElement.textContent.trim()).toBe('Web Development');
+      expect(options[2].nativeElement.textContent.trim()).toBe(
+        'Web Development'
+      );
     });
 
     it('should call catalogStore.setSelectedCategoryId when category changes', () => {
@@ -241,16 +307,20 @@ describe('CatalogPage Integration Test', () => {
   describe('books grid rendering', () => {
     it('should render book cards for each book', () => {
       const bookCards = fixture.debugElement.queryAll(By.css('app-book-card'));
-      expect(bookCards.length).toBe(mockBooks.length);
+      expect(bookCards.length).toBe(mockBooksWithDetails.length);
     });
 
     it('should have proper ARIA attributes on books grid', () => {
       const booksGrid = fixture.debugElement.query(By.css('[role="grid"]'));
       expect(booksGrid).toBeTruthy();
-      expect(booksGrid.nativeElement.getAttribute('aria-label')).toBe('Grille des livres du catalogue');
+      expect(booksGrid.nativeElement.getAttribute('aria-label')).toBe(
+        'Grille des livres du catalogue'
+      );
 
-      const gridCells = fixture.debugElement.queryAll(By.css('[role="gridcell"]'));
-      expect(gridCells.length).toBe(mockBooks.length);
+      const gridCells = fixture.debugElement.queryAll(
+        By.css('[role="gridcell"]')
+      );
+      expect(gridCells.length).toBe(mockBooksWithDetails.length);
     });
   });
 
@@ -268,9 +338,13 @@ describe('CatalogPage Integration Test', () => {
     });
 
     it('should show empty state when no books match filters', () => {
-      const emptyState = fixture.debugElement.query(By.css('[aria-live="polite"]'));
+      const emptyState = fixture.debugElement.query(
+        By.css('[aria-live="polite"]')
+      );
       expect(emptyState).toBeTruthy();
-      expect(emptyState.nativeElement.textContent.trim()).toContain('Aucun livre trouvé pour les critères sélectionnés');
+      expect(emptyState.nativeElement.textContent.trim()).toContain(
+        'Aucun livre trouvé pour les critères sélectionnés'
+      );
     });
 
     it('should not show books grid when no books', () => {
@@ -289,7 +363,9 @@ describe('CatalogPage Integration Test', () => {
 
       const form = fixture.debugElement.query(By.css('form[role="search"]'));
       expect(form).toBeTruthy();
-      expect(form.nativeElement.getAttribute('aria-label')).toBe('Rechercher et filtrer les livres');
+      expect(form.nativeElement.getAttribute('aria-label')).toBe(
+        'Rechercher et filtrer les livres'
+      );
     });
 
     it('should have screen reader friendly content', () => {
@@ -309,7 +385,11 @@ describe('CatalogPage Integration Test', () => {
 
     it('should navigate to book edit when onEditBook is called', () => {
       component.onEditBook('1');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/catalog', '1', 'edit']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith([
+        '/catalog',
+        '1',
+        'edit',
+      ]);
     });
 
     it('should navigate to new book when onAddBook is called', () => {
@@ -322,7 +402,7 @@ describe('CatalogPage Integration Test', () => {
 
       expect(mockLoansStore.createLoan).toHaveBeenCalledWith({
         userId: mockUser.id,
-        bookId: '1'
+        bookId: '1',
       });
     });
   });

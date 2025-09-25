@@ -6,11 +6,14 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   standalone: true,
 })
 export class HighlightPipe implements PipeTransform {
-  constructor(private readonly sanitizer: DomSanitizer) {}
+  constructor(private readonly _sanitizer: DomSanitizer) {} // eslint-disable-line no-unused-vars
 
-  transform(value: string | null | undefined, searchTerm: string | null | undefined): SafeHtml {
+  transform(
+    value: string | null | undefined,
+    searchTerm: string | null | undefined
+  ): SafeHtml {
     if (!value || !searchTerm) {
-      return this.sanitizer.bypassSecurityTrustHtml(value || '');
+      return this._sanitizer.bypassSecurityTrustHtml(value || '');
     }
 
     // Échapper les caractères spéciaux regex dans le terme de recherche
@@ -20,8 +23,11 @@ export class HighlightPipe implements PipeTransform {
     const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
 
     // Remplacer les occurrences par une version surlignée
-    const highlightedText = value.replace(regex, '<mark class="bg-yellow-200 text-yellow-900 px-1 rounded">$1</mark>');
+    const highlightedText = value.replace(
+      regex,
+      '<mark class="bg-yellow-200 text-yellow-900 px-1 rounded">$1</mark>'
+    );
 
-    return this.sanitizer.bypassSecurityTrustHtml(highlightedText);
+    return this._sanitizer.bypassSecurityTrustHtml(highlightedText);
   }
 }

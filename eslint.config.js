@@ -22,10 +22,18 @@ module.exports = [
         describe: 'readonly',
         it: 'readonly',
         beforeEach: 'readonly',
+        afterEach: 'readonly',
         expect: 'readonly',
+        jasmine: 'readonly',
         localStorage: 'readonly',
         setTimeout: 'readonly',
-        Date: 'readonly'
+        Date: 'readonly',
+        window: 'readonly',
+        document: 'readonly',
+        sessionStorage: 'readonly',
+        clearInterval: 'readonly',
+        setInterval: 'readonly',
+        globalThis: 'readonly'
       }
     },
     plugins: {
@@ -35,7 +43,13 @@ module.exports = [
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          'varsIgnorePattern': '^_',
+          'argsIgnorePattern': '^_'
+        }
+      ],
       '@typescript-eslint/no-inferrable-types': 'error',
       '@angular-eslint/directive-selector': [
         'error',

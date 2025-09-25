@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, inject, computed, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  computed,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { Router } from '@angular/router';
 
 import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
@@ -29,7 +36,7 @@ import { LoansStore } from '../../loans/loans.store';
           </button>
         </div>
         <!-- Utilisation du pipe truncate pour limiter la description -->
-        <p class="text-gray-600">{{ descriptionText | truncate : 60 }}</p>
+        <p class="text-gray-600">{{ descriptionText | truncate: 60 }}</p>
       </div>
 
       <!-- Cartes de statistiques principales -->
@@ -38,18 +45,24 @@ import { LoansStore } from '../../loans/loans.store';
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+              <div
+                class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center"
+              >
                 <span class="text-white text-lg">📚</span>
               </div>
             </div>
             <div class="ml-4 flex-1">
               <p class="text-sm font-medium text-gray-500">Total livres</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ catalogStore.totalBooks() }}</p>
+              <p class="text-2xl font-semibold text-gray-900">
+                {{ catalogStore.totalBooks() }}
+              </p>
             </div>
           </div>
           <div class="mt-4">
             <div class="flex items-center text-sm">
-              <span class="text-green-600 font-medium">{{ catalogStore.totalAvailableBooks() }}</span>
+              <span class="text-green-600 font-medium">{{
+                catalogStore.totalAvailableBooks()
+              }}</span>
               <span class="text-gray-500 ml-1">disponibles</span>
             </div>
           </div>
@@ -59,13 +72,17 @@ import { LoansStore } from '../../loans/loans.store';
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+              <div
+                class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center"
+              >
                 <span class="text-white text-lg">📋</span>
               </div>
             </div>
             <div class="ml-4 flex-1">
               <p class="text-sm font-medium text-gray-500">Emprunts actifs</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ loansStore.activeLoansCount() }}</p>
+              <p class="text-2xl font-semibold text-gray-900">
+                {{ loansStore.activeLoansCount() }}
+              </p>
             </div>
           </div>
           <div class="mt-4">
@@ -80,18 +97,24 @@ import { LoansStore } from '../../loans/loans.store';
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
+              <div
+                class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center"
+              >
                 <span class="text-white text-lg">⚠️</span>
               </div>
             </div>
             <div class="ml-4 flex-1">
               <p class="text-sm font-medium text-gray-500">En retard</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ loansStore.overdueLoansCount() }}</p>
+              <p class="text-2xl font-semibold text-gray-900">
+                {{ loansStore.overdueLoansCount() }}
+              </p>
             </div>
           </div>
           <div class="mt-4">
             <div class="flex items-center text-sm">
-              <span class="text-red-600 font-medium">{{ overduePercentage() }}%</span>
+              <span class="text-red-600 font-medium"
+                >{{ overduePercentage() }}%</span
+              >
               <span class="text-gray-500 ml-1">des emprunts actifs</span>
             </div>
           </div>
@@ -101,18 +124,24 @@ import { LoansStore } from '../../loans/loans.store';
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+              <div
+                class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center"
+              >
                 <span class="text-white text-lg">📊</span>
               </div>
             </div>
             <div class="ml-4 flex-1">
               <p class="text-sm font-medium text-gray-500">Taux d'occupation</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ occupationRate() }}%</p>
+              <p class="text-2xl font-semibold text-gray-900">
+                {{ occupationRate() }}%
+              </p>
             </div>
           </div>
           <div class="mt-4">
             <div class="flex items-center text-sm">
-              <span class="text-purple-600 font-medium">{{ borrowedBooks() }}</span>
+              <span class="text-purple-600 font-medium">{{
+                borrowedBooks()
+              }}</span>
               <span class="text-gray-500 ml-1">livres empruntés</span>
             </div>
           </div>
@@ -122,7 +151,9 @@ import { LoansStore } from '../../loans/loans.store';
       <!-- Actions rapides -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            Actions rapides
+          </h3>
           <div class="space-y-3">
             <button
               type="button"
@@ -130,7 +161,9 @@ import { LoansStore } from '../../loans/loans.store';
               class="w-full text-left px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors duration-200"
             >
               <div class="font-medium text-blue-900">Nouvel emprunt</div>
-              <div class="text-sm text-blue-700">Créer un emprunt pour un membre</div>
+              <div class="text-sm text-blue-700">
+                Créer un emprunt pour un membre
+              </div>
             </button>
             <button
               type="button"
@@ -153,15 +186,21 @@ import { LoansStore } from '../../loans/loans.store';
 
         <!-- Statistiques détaillées -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Activité récente</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            Activité récente
+          </h3>
           <div class="space-y-4">
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">Emprunts aujourd'hui</span>
-              <span class="text-sm font-medium text-gray-900">{{ todayLoans() }}</span>
+              <span class="text-sm font-medium text-gray-900">{{
+                todayLoans()
+              }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">Retours aujourd'hui</span>
-              <span class="text-sm font-medium text-gray-900">{{ todayReturns() }}</span>
+              <span class="text-sm font-medium text-gray-900">{{
+                todayReturns()
+              }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">Nouveaux membres</span>
@@ -176,13 +215,17 @@ import { LoansStore } from '../../loans/loans.store';
 
         <!-- État du système -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">État du système</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            État du système
+          </h3>
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-sm text-gray-600">Base de données</span>
               <div class="flex items-center">
                 <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                <span class="text-sm font-medium text-green-600">Opérationnelle</span>
+                <span class="text-sm font-medium text-green-600"
+                  >Opérationnelle</span
+                >
               </div>
             </div>
             <div class="flex items-center justify-between">
@@ -201,13 +244,17 @@ import { LoansStore } from '../../loans/loans.store';
       </div>
 
       <!-- Alerte si problèmes -->
-      <div *ngIf="loansStore.overdueLoansCount() > 0" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      <div
+        *ngIf="loansStore.overdueLoansCount() > 0"
+        class="bg-yellow-50 border border-yellow-200 rounded-lg p-4"
+      >
         <div class="flex">
           <div class="text-yellow-600 mr-3">⚠️</div>
           <div>
             <h4 class="text-yellow-800 font-medium">Attention requise</h4>
             <p class="text-yellow-700 text-sm mt-1">
-              {{ loansStore.overdueLoansCount() }} emprunt(s) en retard nécessitent une action.
+              {{ loansStore.overdueLoansCount() }} emprunt(s) en retard
+              nécessitent une action.
               <button
                 type="button"
                 (click)="onViewOverdueLoans()"
@@ -223,16 +270,17 @@ import { LoansStore } from '../../loans/loans.store';
   `,
 })
 export class AdminDashboardPage implements OnInit, OnDestroy {
-  private refreshInterval?: ReturnType<typeof window.setInterval>;
+  private refreshInterval?: ReturnType<typeof globalThis.setInterval>;
   readonly catalogStore = inject(CatalogStore);
   readonly loansStore = inject(LoansStore);
   private readonly router = inject(Router);
 
-  readonly descriptionText = "Vue d\\'ensemble complète de l\\'activité de la bibliothèque avec toutes les statistiques importantes et les indicateurs de performance pour une gestion optimale";
+  readonly descriptionText =
+    "Vue d\\'ensemble complète de l\\'activité de la bibliothèque avec toutes les statistiques importantes et les indicateurs de performance pour une gestion optimale";
 
   ngOnInit(): void {
     // Rafraîchir les données toutes les 15 secondes
-    this.refreshInterval = window.setInterval(() => {
+    this.refreshInterval = globalThis.setInterval(() => {
       this.catalogStore.refreshBooks();
       this.loansStore.refreshLoans();
     }, 15000);
@@ -240,7 +288,7 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.refreshInterval) {
-      window.clearInterval(this.refreshInterval);
+      globalThis.clearInterval(this.refreshInterval);
     }
   }
 
@@ -254,14 +302,18 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
 
   readonly occupationRate = computed(() => {
     const totalBooks = this.catalogStore.totalBooks();
-    if (totalBooks === 0) {return 0;}
+    if (totalBooks === 0) {
+      return 0;
+    }
     const borrowedBooks = this.borrowedBooks();
     return Math.round((borrowedBooks / totalBooks) * 100);
   });
 
   readonly overduePercentage = computed(() => {
     const activeLoans = this.loansStore.activeLoansCount();
-    if (activeLoans === 0) {return 0;}
+    if (activeLoans === 0) {
+      return 0;
+    }
     const overdueLoans = this.loansStore.overdueLoansCount();
     return Math.round((overdueLoans / activeLoans) * 100);
   });
@@ -277,7 +329,9 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
   readonly todayReturns = computed(() => {
     const today = new Date().toDateString();
     return this.loansStore.loans().filter(loan => {
-      if (!loan.returnedAt) {return false;}
+      if (!loan.returnedAt) {
+        return false;
+      }
       const returnDate = new Date(loan.returnedAt).toDateString();
       return returnDate === today;
     }).length;
@@ -292,7 +346,9 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
   }
 
   onViewOverdueLoans(): void {
-    this.router.navigate(['/loans/all'], { queryParams: { filter: 'overdue' } });
+    this.router.navigate(['/loans/all'], {
+      queryParams: { filter: 'overdue' },
+    });
   }
 
   onManageMembers(): void {

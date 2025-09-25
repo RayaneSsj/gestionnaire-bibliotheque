@@ -27,7 +27,9 @@ import { BookCardComponent } from './book-card.component';
       <!-- En-tête -->
       <div class="mb-8">
         <div class="flex justify-between items-center mb-4">
-          <h1 class="text-3xl font-bold text-gray-900" id="page-title">Catalogue des livres</h1>
+          <h1 class="text-3xl font-bold text-gray-900" id="page-title">
+            Catalogue des livres
+          </h1>
           <!-- Utilisation de la directive hasRole -->
           <button
             *appHasRole="'admin'"
@@ -41,7 +43,10 @@ import { BookCardComponent } from './book-card.component';
         </div>
 
         <!-- Statistiques -->
-        <section class="bg-blue-50 rounded-lg p-4 mb-6" aria-labelledby="stats-title">
+        <section
+          class="bg-blue-50 rounded-lg p-4 mb-6"
+          aria-labelledby="stats-title"
+        >
           <h2 id="stats-title" class="sr-only">Statistiques du catalogue</h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div>
@@ -67,7 +72,10 @@ import { BookCardComponent } from './book-card.component';
       </div>
 
       <!-- Filtres et recherche -->
-      <section class="bg-white rounded-lg shadow-sm border p-6 mb-8" aria-labelledby="filters-title">
+      <section
+        class="bg-white rounded-lg shadow-sm border p-6 mb-8"
+        aria-labelledby="filters-title"
+      >
         <h2 id="filters-title" class="sr-only">Filtres et recherche</h2>
         <form role="search" aria-label="Rechercher et filtrer les livres">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -91,7 +99,8 @@ import { BookCardComponent } from './book-card.component';
                   aria-describedby="search-help"
                 />
                 <div id="search-help" class="sr-only">
-                  Saisissez un titre de livre ou un nom d'auteur pour filtrer les résultats
+                  Saisissez un titre de livre ou un nom d'auteur pour filtrer
+                  les résultats
                 </div>
                 <div
                   class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
@@ -132,7 +141,10 @@ import { BookCardComponent } from './book-card.component';
               >
                 <option value="">Toutes les catégories</option>
                 <option
-                  *ngFor="let category of catalogStore.categories(); trackBy: trackByCategoryId"
+                  *ngFor="
+                    let category of catalogStore.categories();
+                    trackBy: trackByCategoryId
+                  "
                   [value]="category.id"
                 >
                   {{ category.name }}
@@ -195,14 +207,16 @@ import { BookCardComponent } from './book-card.component';
         class="text-center py-12"
         aria-live="polite"
       >
-        <p class="text-gray-500">Aucun livre trouvé pour les critères sélectionnés.</p>
+        <p class="text-gray-500">
+          Aucun livre trouvé pour les critères sélectionnés.
+        </p>
       </section>
     </div>
   `,
   styles: [],
 })
 export class CatalogPage implements OnInit, OnDestroy {
-  private refreshInterval?: number;
+  private refreshInterval?: ReturnType<typeof globalThis.setInterval>;
   readonly catalogStore = inject(CatalogStore);
   readonly authStore = inject(AuthStore);
   readonly loansStore = inject(LoansStore);
@@ -214,14 +228,14 @@ export class CatalogPage implements OnInit, OnDestroy {
     this.focusService.focusOnMainHeading();
 
     // Rafraîchir le catalogue toutes les 20 secondes pour tous les utilisateurs
-    this.refreshInterval = window.setInterval(() => {
+    this.refreshInterval = globalThis.setInterval(() => {
       this.catalogStore.refreshBooks();
     }, 20000);
   }
 
   ngOnDestroy(): void {
     if (this.refreshInterval) {
-      window.clearInterval(this.refreshInterval);
+      globalThis.clearInterval(this.refreshInterval);
     }
   }
 
