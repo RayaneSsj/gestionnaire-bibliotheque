@@ -97,7 +97,11 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       ).pipe(delay(randomDelay));
     }
 
-    const user = createUser(payload.email, payload.displayName);
+    const user = createUser(
+      payload.email,
+      payload.displayName,
+      payload.password
+    );
     const token = generateToken(user.id);
 
     return of(

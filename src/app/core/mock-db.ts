@@ -1,6 +1,5 @@
 import { User, UserRole, AuthToken } from '../features/auth/data';
-import { Author, Book, Category , Loan, LoanStatus } from '../shared/models';
-
+import { Author, Book, Category, Loan, LoanStatus } from '../shared/models';
 
 export interface Member extends User {
   membershipDate: string;
@@ -16,6 +15,13 @@ export interface MockDatabase {
   members: Member[];
   tokens: { [userId: string]: AuthToken };
 }
+
+const passwords: { [email: string]: string } = {
+  'admin@test.com': 'admin',
+  'user@test.com': 'user',
+  'librarian@test.com': 'librarian',
+  'jane@test.com': 'jane',
+};
 
 export const mockDb: MockDatabase = {
   users: [
@@ -62,7 +68,8 @@ export const mockDb: MockDatabase = {
       id: '1',
       firstName: 'Victor',
       lastName: 'Hugo',
-      biography: 'Écrivain français du XIXe siècle, auteur des Misérables et de Notre-Dame de Paris.',
+      biography:
+        'Écrivain français du XIXe siècle, auteur des Misérables et de Notre-Dame de Paris.',
       birthDate: '1802-02-26',
       deathDate: '1885-05-22',
       nationality: 'Française',
@@ -107,7 +114,8 @@ export const mockDb: MockDatabase = {
     {
       id: '1',
       name: 'Littérature classique',
-      description: 'Œuvres littéraires reconnues pour leur valeur artistique et culturelle.',
+      description:
+        'Œuvres littéraires reconnues pour leur valeur artistique et culturelle.',
       createdAt: '2024-01-01T00:00:00.000Z',
       updatedAt: '2024-01-01T00:00:00.000Z',
     },
@@ -176,7 +184,7 @@ export const mockDb: MockDatabase = {
     },
     {
       id: '3',
-      title: 'Harry Potter à l\'école des sorciers',
+      title: "Harry Potter à l'école des sorciers",
       isbn: '978-2-07-054120-4',
       authorId: '2',
       categoryId: '2',
@@ -196,7 +204,7 @@ export const mockDb: MockDatabase = {
       isbn: '978-2-02-002899-9',
       authorId: '3',
       categoryId: '3',
-      description: 'Chef-d\'œuvre du réalisme magique.',
+      description: "Chef-d'œuvre du réalisme magique.",
       publishedDate: '1967-05-30',
       totalCopies: 2,
       availableCopies: 0,
@@ -208,11 +216,11 @@ export const mockDb: MockDatabase = {
     },
     {
       id: '5',
-      title: 'Le Crime de l\'Orient-Express',
+      title: "Le Crime de l'Orient-Express",
       isbn: '978-2-253-00575-8',
       authorId: '4',
       categoryId: '4',
-      description: 'Célèbre roman policier d\'Agatha Christie.',
+      description: "Célèbre roman policier d'Agatha Christie.",
       publishedDate: '1934-01-01',
       totalCopies: 4,
       availableCopies: 2,
@@ -338,27 +346,27 @@ export function generateToken(userId: string): AuthToken {
     expiresIn: 3600,
     tokenType: 'Bearer',
   };
-  
+
   mockDb.tokens[userId] = token;
   return token;
 }
 
-export function findUserByCredentials(email: string, password: string): User | null {
-  const validCredentials: { [email: string]: string } = {
-    'admin@test.com': 'admin',
-    'user@test.com': 'user',
-    'librarian@test.com': 'librarian',
-    'jane@test.com': 'jane',
-  };
-
-  if (validCredentials[email] === password) {
+export function findUserByCredentials(
+  email: string,
+  password: string
+): User | null {
+  if (passwords[email] === password) {
     return mockDb.users.find(user => user.email === email) || null;
   }
-  
+
   return null;
 }
 
-export function createUser(email: string, displayName: string): User {
+export function createUser(
+  email: string,
+  displayName: string,
+  password?: string
+): User {
   const newUser: User = {
     id: `user_${Date.now()}`,
     email,
@@ -370,26 +378,35 @@ export function createUser(email: string, displayName: string): User {
   };
 
   mockDb.users.push(newUser);
-  
+
+  if (password) {
+    passwords[email] = password;
+  }
+
   const newMember: Member = {
     ...newUser,
     membershipDate: new Date().toISOString(),
     borrowedBooksCount: 0,
   };
-  
+
   mockDb.members.push(newMember);
-  
+
   return newUser;
 }
 
 export function updateBookAvailability(bookId: string, delta: number): void {
   const book = mockDb.books.find(b => b.id === bookId);
   if (book) {
-    book.availableCopies = Math.max(0, Math.min(book.totalCopies, book.availableCopies + delta));
+    book.availableCopies = Math.max(
+      0,
+      Math.min(book.totalCopies, book.availableCopies + delta)
+    );
     book.updatedAt = new Date().toISOString();
   }
 }
 
 export function isEmailTaken(email: string): boolean {
-  return mockDb.users.some(user => user.email.toLowerCase() === email.toLowerCase());
+  return mockDb.users.some(
+    user => user.email.toLowerCase() === email.toLowerCase()
+  );
 }
