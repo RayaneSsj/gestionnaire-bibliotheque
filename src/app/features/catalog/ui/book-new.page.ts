@@ -1,21 +1,23 @@
-import { CommonModule } from "@angular/common";
-import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
-import { Router } from "@angular/router";
+import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
-import { CatalogStore } from "../catalog.store";
+import { CatalogStore } from '../catalog.store';
 
-import { BookFormComponent, BookFormData } from "./book-form.component";
+import { BookFormComponent, BookFormData } from './book-form.component';
 
 @Component({
-  selector: "app-book-new",
+  selector: 'app-book-new',
   standalone: true,
   imports: [CommonModule, BookFormComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="container mx-auto px-4 py-8">
       <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Ajouter un nouveau livre</h1>
-        
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">
+          Ajouter un nouveau livre
+        </h1>
+
         <div class="bg-white rounded-lg shadow-lg p-8">
           <app-book-form
             [authors]="catalogStore.authors()"
@@ -36,14 +38,22 @@ export class BookNewPage {
   readonly catalogStore = inject(CatalogStore);
 
   onSubmit(formData: BookFormData): void {
-    this.catalogStore.createBook({
-      ...formData,
-      availableCopies: formData.totalCopies,
-    });
-    this.router.navigate(["/catalog"]);
+    this.catalogStore
+      .createBook({
+        ...formData,
+        availableCopies: formData.totalCopies,
+      })
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/catalog']);
+        },
+        error: () => {
+          // L'erreur est déjà gérée dans le store
+        },
+      });
   }
 
   onCancel(): void {
-    this.router.navigate(["/catalog"]);
+    this.router.navigate(['/catalog']);
   }
 }

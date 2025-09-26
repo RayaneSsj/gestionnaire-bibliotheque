@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
@@ -202,7 +207,9 @@ export class LoginPage {
       },
       error: error => {
         this.isLoading.set(false);
-        this.errorMessage.set(error.message || 'Une erreur est survenue');
+        this.errorMessage.set(
+          error.error?.message || error.message || 'Une erreur est survenue'
+        );
       },
       complete: () => {
         this.isLoading.set(false);

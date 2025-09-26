@@ -6,7 +6,7 @@ import {
 import { delay, of, throwError } from 'rxjs';
 
 import { UserRole, RegisterPayload } from '../../features/auth/data';
-import { Book } from '../../features/catalog/data';
+import { Book, Author, Category } from '../../features/catalog/data';
 import { LoanStatus } from '../../shared/models';
 import {
   mockDb,
@@ -355,6 +355,74 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       new HttpResponse({
         status: 200,
         body: mockDb.categories,
+      })
+    ).pipe(delay(randomDelay));
+  }
+
+  if (req.method === 'POST' && url === '/api/authors') {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 401,
+            statusText: 'Unauthorized',
+            error: { message: 'Authentification requise' },
+          })
+      ).pipe(delay(randomDelay));
+    }
+
+    const authorData = req.body as Partial<Author>;
+    const newAuthor: Author = {
+      id: `author_${Date.now()}`,
+      firstName: authorData.firstName || '',
+      lastName: authorData.lastName || '',
+      biography: authorData.biography || '',
+      birthDate: authorData.birthDate || '',
+      nationality: authorData.nationality || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ...(authorData.deathDate && { deathDate: authorData.deathDate }),
+    };
+
+    mockDb.authors.push(newAuthor);
+
+    return of(
+      new HttpResponse({
+        status: 201,
+        body: newAuthor,
+      })
+    ).pipe(delay(randomDelay));
+  }
+
+  if (req.method === 'POST' && url === '/api/categories') {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 401,
+            statusText: 'Unauthorized',
+            error: { message: 'Authentification requise' },
+          })
+      ).pipe(delay(randomDelay));
+    }
+
+    const categoryData = req.body as Partial<Category>;
+    const newCategory: Category = {
+      id: `category_${Date.now()}`,
+      name: categoryData.name || '',
+      description: categoryData.description || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    mockDb.categories.push(newCategory);
+
+    return of(
+      new HttpResponse({
+        status: 201,
+        body: newCategory,
       })
     ).pipe(delay(randomDelay));
   }

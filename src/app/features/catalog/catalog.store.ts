@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, signal, inject } from '@angular/core';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, of, tap, Observable } from 'rxjs';
 
 import { Book, Author, Category } from './data';
 
@@ -105,27 +105,26 @@ export class CatalogStore {
   }
 
   // Méthodes CRUD pour les livres
-  createBook(bookData: Omit<Book, 'id' | 'createdAt' | 'updatedAt'>): void {
+  createBook(
+    bookData: Omit<Book, 'id' | 'createdAt' | 'updatedAt'>
+  ): Observable<Book | null> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.http
-      .post<Book>('/api/books', bookData)
-      .pipe(
-        tap(newBook => {
-          const enrichedBook = this.enrichBookWithDetails(newBook);
-          this._books.update(books => [...books, enrichedBook]);
-        }),
-        catchError(error => {
-          this._error.set(
-            error.error?.message || 'Erreur lors de la création du livre'
-          );
-          return of(null);
-        })
-      )
-      .subscribe(() => {
+    return this.http.post<Book>('/api/books', bookData).pipe(
+      tap(newBook => {
+        const enrichedBook = this.enrichBookWithDetails(newBook);
+        this._books.update(books => [...books, enrichedBook]);
         this._isLoading.set(false);
-      });
+      }),
+      catchError(error => {
+        this._error.set(
+          error.error?.message || 'Erreur lors de la création du livre'
+        );
+        this._isLoading.set(false);
+        return of(null);
+      })
+    );
   }
 
   updateBook(bookId: string, bookData: Partial<Book>): void {

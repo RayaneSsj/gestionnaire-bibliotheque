@@ -1,5 +1,16 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  computed,
+  signal,
+} from '@angular/core';
+import {
+  RouterOutlet,
+  RouterLink,
+  RouterLinkActive,
+  Router,
+} from '@angular/router';
 
 import { AuthStore } from './core';
 import { SpinnerComponent } from './shared/ui/spinner.component';
@@ -8,7 +19,13 @@ import { ToastComponent } from './shared/ui/toast.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, SpinnerComponent, ToastComponent],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    SpinnerComponent,
+    ToastComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Skip link for accessibility -->
@@ -31,7 +48,11 @@ import { ToastComponent } from './shared/ui/toast.component';
               Gestionnaire Bibliothèque
             </a>
           </h1>
-          <nav class="hidden md:flex space-x-8 items-center" role="navigation" aria-label="Navigation principale">
+          <nav
+            class="hidden md:flex space-x-8 items-center"
+            role="navigation"
+            aria-label="Navigation principale"
+          >
             <a routerLink="/catalog" routerLinkActive="active" class="nav-link"
               >Catalogue</a
             >
@@ -52,7 +73,10 @@ import { ToastComponent } from './shared/ui/toast.component';
             }
             @if (showUserInfo()) {
               <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-600" aria-label="Utilisateur connecté">
+                <span
+                  class="text-sm text-gray-600"
+                  aria-label="Utilisateur connecté"
+                >
                   Bonjour, {{ currentUserName() }}
                 </span>
                 <button
@@ -66,9 +90,14 @@ import { ToastComponent } from './shared/ui/toast.component';
             }
           </nav>
           <button
+            (click)="toggleMobileMenu()"
             class="md:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            aria-label="Ouvrir le menu de navigation"
-            aria-expanded="false"
+            [attr.aria-label]="
+              isMobileMenuOpen()
+                ? 'Fermer le menu de navigation'
+                : 'Ouvrir le menu de navigation'
+            "
+            [attr.aria-expanded]="isMobileMenuOpen()"
           >
             <svg
               class="h-6 w-6"
@@ -87,6 +116,65 @@ import { ToastComponent } from './shared/ui/toast.component';
           </button>
         </div>
       </div>
+
+      <!-- Menu mobile déroulant -->
+      @if (isMobileMenuOpen()) {
+        <div class="md:hidden border-t bg-white shadow-lg">
+          <div class="container py-4 space-y-4">
+            <a
+              routerLink="/catalog"
+              routerLinkActive="active"
+              class="block nav-link text-lg py-2"
+              (click)="closeMobileMenu()"
+            >
+              Catalogue
+            </a>
+            @if (showEmprunts()) {
+              <a
+                routerLink="/loans"
+                routerLinkActive="active"
+                class="block nav-link text-lg py-2"
+                (click)="closeMobileMenu()"
+              >
+                Emprunts
+              </a>
+            }
+            @if (showAdmin()) {
+              <a
+                routerLink="/admin"
+                routerLinkActive="active"
+                class="block nav-link text-lg py-2"
+                (click)="closeMobileMenu()"
+              >
+                Administration
+              </a>
+            }
+            @if (showAuth()) {
+              <a
+                routerLink="/auth"
+                routerLinkActive="active"
+                class="block nav-link text-lg py-2"
+                (click)="closeMobileMenu()"
+              >
+                Connexion
+              </a>
+            }
+            @if (showUserInfo()) {
+              <div class="border-t pt-4 space-y-4">
+                <div class="text-sm text-gray-600">
+                  Bonjour, {{ currentUserName() }}
+                </div>
+                <button
+                  (click)="onLogout(); closeMobileMenu()"
+                  class="block w-full text-left bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                >
+                  Déconnexion
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
     </header>
     <main id="main-content" class="min-h-screen bg-gray-50" role="main">
       <router-outlet></router-outlet>
@@ -116,12 +204,15 @@ import { ToastComponent } from './shared/ui/toast.component';
       .skip-link:focus {
         top: 6px;
       }
-    `
+    `,
   ],
 })
 export class AppComponent {
   private readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
+
+  // Signal pour gérer l'état du menu mobile
+  readonly isMobileMenuOpen = signal(false);
 
   constructor() {
     console.log('🚀 AppComponent loaded!');
@@ -164,5 +255,13 @@ export class AppComponent {
   onLogout(): void {
     this.authStore.logout();
     this.router.navigate(['/']);
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen.set(!this.isMobileMenuOpen());
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen.set(false);
   }
 }

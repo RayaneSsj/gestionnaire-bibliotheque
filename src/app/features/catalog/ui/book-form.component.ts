@@ -1,5 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, input, output, computed, effect, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  output,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { Book, Author, Category } from '../data';
@@ -27,7 +37,10 @@ export interface BookFormData {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Titre -->
         <div class="md:col-span-2">
-          <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="title"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Titre <span class="text-red-500">*</span>
           </label>
           <input
@@ -38,7 +51,10 @@ export interface BookFormData {
             [class.border-red-500]="isFieldInvalid('title')"
             placeholder="Titre du livre"
           />
-          <div *ngIf="isFieldInvalid('title')" class="mt-1 text-sm text-red-600">
+          <div
+            *ngIf="isFieldInvalid('title')"
+            class="mt-1 text-sm text-red-600"
+          >
             <div *ngIf="bookForm.get('title')?.errors?.['required']">
               Le titre est requis
             </div>
@@ -50,7 +66,10 @@ export interface BookFormData {
 
         <!-- ISBN -->
         <div>
-          <label for="isbn" class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="isbn"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             ISBN <span class="text-red-500">*</span>
           </label>
           <input
@@ -70,7 +89,10 @@ export interface BookFormData {
 
         <!-- Nombre d'exemplaires -->
         <div>
-          <label for="totalCopies" class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="totalCopies"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Nombre d'exemplaires <span class="text-red-500">*</span>
           </label>
           <input
@@ -82,7 +104,10 @@ export interface BookFormData {
             [class.border-red-500]="isFieldInvalid('totalCopies')"
             placeholder="1"
           />
-          <div *ngIf="isFieldInvalid('totalCopies')" class="mt-1 text-sm text-red-600">
+          <div
+            *ngIf="isFieldInvalid('totalCopies')"
+            class="mt-1 text-sm text-red-600"
+          >
             <div *ngIf="bookForm.get('totalCopies')?.errors?.['required']">
               Le nombre d'exemplaires est requis
             </div>
@@ -94,21 +119,82 @@ export interface BookFormData {
 
         <!-- Auteur -->
         <div>
-          <label for="authorId" class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="authorId"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Auteur <span class="text-red-500">*</span>
           </label>
-          <select
-            id="authorId"
-            formControlName="authorId"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            [class.border-red-500]="isFieldInvalid('authorId')"
+          <div class="flex gap-2">
+            <select
+              id="authorId"
+              formControlName="authorId"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              [class.border-red-500]="isFieldInvalid('authorId')"
+            >
+              <option value="">Sélectionner un auteur</option>
+              <option
+                *ngFor="let author of allAuthors(); trackBy: trackByAuthorId"
+                [value]="author.id"
+              >
+                {{ author.firstName }} {{ author.lastName }}
+              </option>
+            </select>
+            <button
+              type="button"
+              (click)="showNewAuthorForm = true"
+              class="px-3 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              title="Ajouter un nouvel auteur"
+            >
+              +
+            </button>
+          </div>
+
+          <!-- Formulaire nouvel auteur -->
+          @if (showNewAuthorForm) {
+            <div class="mt-2 p-3 bg-gray-50 rounded-md border">
+              <div class="grid grid-cols-2 gap-2 mb-2">
+                <input
+                  #newAuthorFirstName
+                  type="text"
+                  placeholder="Prénom"
+                  class="px-2 py-1 text-sm border border-gray-300 rounded-md"
+                />
+                <input
+                  #newAuthorLastName
+                  type="text"
+                  placeholder="Nom"
+                  class="px-2 py-1 text-sm border border-gray-300 rounded-md"
+                />
+              </div>
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  (click)="
+                    createAuthor(
+                      newAuthorFirstName.value,
+                      newAuthorLastName.value
+                    )
+                  "
+                  class="px-2 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Créer
+                </button>
+                <button
+                  type="button"
+                  (click)="showNewAuthorForm = false"
+                  class="px-2 py-1 text-sm bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          }
+
+          <div
+            *ngIf="isFieldInvalid('authorId')"
+            class="mt-1 text-sm text-red-600"
           >
-            <option value="">Sélectionner un auteur</option>
-            <option *ngFor="let author of authors(); trackBy: trackByAuthorId" [value]="author.id">
-              {{ author.firstName }} {{ author.lastName }}
-            </option>
-          </select>
-          <div *ngIf="isFieldInvalid('authorId')" class="mt-1 text-sm text-red-600">
             <div *ngIf="bookForm.get('authorId')?.errors?.['required']">
               L'auteur est requis
             </div>
@@ -117,21 +203,74 @@ export interface BookFormData {
 
         <!-- Catégorie -->
         <div>
-          <label for="categoryId" class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="categoryId"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Catégorie <span class="text-red-500">*</span>
           </label>
-          <select
-            id="categoryId"
-            formControlName="categoryId"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            [class.border-red-500]="isFieldInvalid('categoryId')"
+          <div class="flex gap-2">
+            <select
+              id="categoryId"
+              formControlName="categoryId"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              [class.border-red-500]="isFieldInvalid('categoryId')"
+            >
+              <option value="">Sélectionner une catégorie</option>
+              <option
+                *ngFor="
+                  let category of allCategories();
+                  trackBy: trackByCategoryId
+                "
+                [value]="category.id"
+              >
+                {{ category.name }}
+              </option>
+            </select>
+            <button
+              type="button"
+              (click)="showNewCategoryForm = true"
+              class="px-3 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              title="Ajouter une nouvelle catégorie"
+            >
+              +
+            </button>
+          </div>
+
+          <!-- Formulaire nouvelle catégorie -->
+          @if (showNewCategoryForm) {
+            <div class="mt-2 p-3 bg-gray-50 rounded-md border">
+              <div class="mb-2">
+                <input
+                  #newCategoryName
+                  type="text"
+                  placeholder="Nom de la catégorie"
+                  class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md"
+                />
+              </div>
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  (click)="createCategory(newCategoryName.value)"
+                  class="px-2 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Créer
+                </button>
+                <button
+                  type="button"
+                  (click)="showNewCategoryForm = false"
+                  class="px-2 py-1 text-sm bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          }
+
+          <div
+            *ngIf="isFieldInvalid('categoryId')"
+            class="mt-1 text-sm text-red-600"
           >
-            <option value="">Sélectionner une catégorie</option>
-            <option *ngFor="let category of categories(); trackBy: trackByCategoryId" [value]="category.id">
-              {{ category.name }}
-            </option>
-          </select>
-          <div *ngIf="isFieldInvalid('categoryId')" class="mt-1 text-sm text-red-600">
             <div *ngIf="bookForm.get('categoryId')?.errors?.['required']">
               La catégorie est requise
             </div>
@@ -140,7 +279,10 @@ export interface BookFormData {
 
         <!-- Date de publication -->
         <div>
-          <label for="publishedDate" class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="publishedDate"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Date de publication
           </label>
           <input
@@ -153,7 +295,10 @@ export interface BookFormData {
 
         <!-- Langue -->
         <div>
-          <label for="language" class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="language"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Langue
           </label>
           <input
@@ -167,7 +312,10 @@ export interface BookFormData {
 
         <!-- Nombre de pages -->
         <div>
-          <label for="pages" class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="pages"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Nombre de pages
           </label>
           <input
@@ -182,7 +330,10 @@ export interface BookFormData {
 
         <!-- Éditeur -->
         <div>
-          <label for="publisher" class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="publisher"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Éditeur
           </label>
           <input
@@ -197,7 +348,10 @@ export interface BookFormData {
 
       <!-- Description -->
       <div>
-        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          for="description"
+          class="block text-sm font-medium text-gray-700 mb-1"
+        >
           Description
         </label>
         <textarea
@@ -232,6 +386,13 @@ export interface BookFormData {
 })
 export class BookFormComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly http = inject(HttpClient);
+
+  showNewAuthorForm = false;
+  showNewCategoryForm = false;
+
+  private readonly _customAuthors = signal<Author[]>([]);
+  private readonly _customCategories = signal<Category[]>([]);
 
   readonly initialData = input<Partial<Book>>();
   readonly authors = input.required<Author[]>();
@@ -256,6 +417,16 @@ export class BookFormComponent {
   });
 
   readonly isFormValid = computed(() => this.bookForm.valid);
+
+  readonly allAuthors = computed(() => [
+    ...this.authors(),
+    ...this._customAuthors(),
+  ]);
+
+  readonly allCategories = computed(() => [
+    ...this.categories(),
+    ...this._customCategories(),
+  ]);
 
   constructor() {
     // Effect pour initialiser le formulaire avec les données existantes
@@ -298,7 +469,7 @@ export class BookFormComponent {
         pages: formValue.pages || undefined,
         publisher: formValue.publisher || undefined,
       };
-      
+
       this.formSubmit.emit(bookData);
     } else {
       this.bookForm.markAllAsTouched();
@@ -315,5 +486,55 @@ export class BookFormComponent {
 
   onCancel(): void {
     this.cancel.emit();
+  }
+
+  createAuthor(firstName: string, lastName: string): void {
+    if (!firstName.trim() || !lastName.trim()) {
+      return;
+    }
+
+    const newAuthor: Omit<Author, 'id' | 'createdAt' | 'updatedAt'> = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      biography: '',
+      birthDate: '',
+      nationality: '',
+    };
+
+    this.http.post<Author>('/api/authors', newAuthor).subscribe({
+      next: author => {
+        this._customAuthors.update(authors => [...authors, author]);
+        this.bookForm.patchValue({ authorId: author.id });
+        this.showNewAuthorForm = false;
+      },
+      error: error => {
+        console.error(
+          "Erreur lors de la création de l'auteur:",
+          error.error?.message || error.message
+        );
+      },
+    });
+  }
+
+  createCategory(name: string): void {
+    if (!name.trim()) {
+      return;
+    }
+
+    const newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt'> = {
+      name: name.trim(),
+      description: '',
+    };
+
+    this.http.post<Category>('/api/categories', newCategory).subscribe({
+      next: category => {
+        this._customCategories.update(categories => [...categories, category]);
+        this.bookForm.patchValue({ categoryId: category.id });
+        this.showNewCategoryForm = false;
+      },
+      error: error => {
+        console.error('Erreur lors de la création de la catégorie:', error);
+      },
+    });
   }
 }
