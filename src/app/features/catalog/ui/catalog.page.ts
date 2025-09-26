@@ -196,6 +196,7 @@ import { BookCardComponent } from './book-card.component';
             (viewDetails)="onViewDetails($event)"
             (borrow)="onBorrowBook($event)"
             (edit)="onEditBook($event)"
+            (delete)="onDeleteBook($event)"
             role="gridcell"
           />
         </div>
@@ -289,6 +290,21 @@ export class CatalogPage implements OnInit, OnDestroy {
 
   onAddBook(): void {
     this.router.navigate(['/catalog', 'new']);
+  }
+
+  onDeleteBook(bookId: string): void {
+    const book = this.catalogStore.getBookById(bookId);
+    if (!book) {
+      return;
+    }
+
+    const confirmed = globalThis.confirm(
+      `Êtes-vous sûr de vouloir supprimer le livre "${book.title}" ?\n\nCette action est irréversible.`
+    );
+
+    if (confirmed) {
+      this.catalogStore.deleteBook(bookId);
+    }
   }
 
   trackByCategoryId(_index: number, category: { id: string }): string {

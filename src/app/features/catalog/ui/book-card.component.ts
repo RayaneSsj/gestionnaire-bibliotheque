@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  output,
+} from '@angular/core';
 
 import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
 import { HighlightPipe } from '../../../shared/pipes/highlight.pipe';
@@ -12,31 +17,55 @@ import { BookWithDetails } from '../catalog.store';
   imports: [CommonModule, TruncatePipe, HighlightPipe, HasRoleDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
+    <div
+      class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200"
+    >
       <div class="aspect-w-3 aspect-h-4 bg-gray-200">
-        <div class="w-full h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-          <svg class="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        <div
+          class="w-full h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center"
+        >
+          <svg
+            class="w-16 h-16 text-blue-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+            ></path>
           </svg>
         </div>
       </div>
-      
+
       <div class="p-4">
         <div class="mb-2">
           <h3 class="font-semibold text-lg text-gray-900 line-clamp-2 mb-1">
             <!-- Utilisation du pipe highlight pour surligner le terme de recherche -->
-            <span [innerHTML]="book().title | highlight : searchTerm()"></span>
+            <span [innerHTML]="book().title | highlight: searchTerm()"></span>
           </h3>
           <p class="text-sm text-gray-600 mb-2">
-            par {{ book().author ? book().author!.firstName + ' ' + book().author!.lastName : 'Auteur inconnu' }}
+            par
+            {{
+              book().author
+                ? book().author!.firstName + ' ' + book().author!.lastName
+                : 'Auteur inconnu'
+            }}
           </p>
-          <span class="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+          <span
+            class="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+          >
             {{ book().category?.name || 'Non catégorisé' }}
           </span>
 
           <!-- Utilisation du pipe truncate pour afficher une description courte -->
-          <p *ngIf="book().description" class="text-xs text-gray-500 mt-2 leading-relaxed">
-            {{ book().description | truncate : 80 : '...' }}
+          <p
+            *ngIf="book().description"
+            class="text-xs text-gray-500 mt-2 leading-relaxed"
+          >
+            {{ book().description | truncate: 80 : '...' }}
           </p>
         </div>
 
@@ -47,10 +76,13 @@ import { BookWithDetails } from '../catalog.store';
               <span [class]="availabilityClass()">
                 {{ book().availableCopies }} / {{ book().totalCopies }}
               </span>
-              <div [class]="statusIndicatorClass()" class="w-2 h-2 rounded-full"></div>
+              <div
+                [class]="statusIndicatorClass()"
+                class="w-2 h-2 rounded-full"
+              ></div>
             </div>
           </div>
-          
+
           <div *ngIf="book().isbn" class="text-xs text-gray-500 mt-1">
             ISBN: {{ book().isbn }}
           </div>
@@ -64,7 +96,7 @@ import { BookWithDetails } from '../catalog.store';
           >
             Voir les détails
           </button>
-          
+
           <div class="flex space-x-2">
             <button
               *ngIf="showBorrowButton()"
@@ -75,7 +107,7 @@ import { BookWithDetails } from '../catalog.store';
             >
               {{ borrowButtonText() }}
             </button>
-            
+
             <!-- Utilisation de la directive hasRole -->
             <button
               *appHasRole="'admin'"
@@ -84,6 +116,16 @@ import { BookWithDetails } from '../catalog.store';
               class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors duration-200"
             >
               Modifier
+            </button>
+
+            <button
+              *appHasRole="'admin'"
+              type="button"
+              (click)="onDelete()"
+              class="flex-1 bg-red-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-red-700 transition-colors duration-200"
+              title="Supprimer ce livre"
+            >
+              Supprimer
             </button>
           </div>
         </div>
@@ -98,7 +140,7 @@ import { BookWithDetails } from '../catalog.store';
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-    `
+    `,
   ],
 })
 export class BookCardComponent {
@@ -111,11 +153,12 @@ export class BookCardComponent {
   readonly viewDetails = output<string>();
   readonly borrow = output<string>();
   readonly edit = output<string>();
+  readonly delete = output<string>();
 
   availabilityClass(): string {
     const available = this.book().availableCopies;
     const total = this.book().totalCopies;
-    
+
     if (available === 0) {
       return 'text-red-600 font-medium';
     } else if (available <= total * 0.3) {
@@ -127,7 +170,7 @@ export class BookCardComponent {
   statusIndicatorClass(): string {
     const available = this.book().availableCopies;
     const total = this.book().totalCopies;
-    
+
     if (available === 0) {
       return 'bg-red-500';
     } else if (available <= total * 0.3) {
@@ -151,12 +194,13 @@ export class BookCardComponent {
   }
 
   borrowButtonClass(): string {
-    const baseClasses = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200';
-    
+    const baseClasses =
+      'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200';
+
     if (!this.canBorrow()) {
       return `${baseClasses} bg-gray-300 text-gray-500 cursor-not-allowed`;
     }
-    
+
     return `${baseClasses} bg-green-600 text-white hover:bg-green-700`;
   }
 
@@ -172,5 +216,9 @@ export class BookCardComponent {
 
   onEdit(): void {
     this.edit.emit(this.book().id);
+  }
+
+  onDelete(): void {
+    this.delete.emit(this.book().id);
   }
 }
