@@ -46,7 +46,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
           errorMessage =
             error.error?.message ||
             'Session expirée. Veuillez vous reconnecter.';
-          shouldLogout = true;
+          shouldLogout = !req.url.includes('/api/auth/login');
           break;
 
         case 403:
